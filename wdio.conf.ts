@@ -1,37 +1,32 @@
 import { exec } from 'node:child_process';
+import { access, mkdir, constants } from 'node:fs/promises';
 import { promisify } from 'node:util';
 import type { Options } from '@wdio/types';
 import { W3CCapabilities } from '@wdio/types/build/Capabilities';
 
-import { REMOTE_CONFIG } from './config.ts';
+import { REMOTE_CONFIG } from './utils/config.ts';
 import { waitForSessionReady, WaldoDriver } from './utils/utils.ts';
 
 const execP = promisify(exec);
 
 const PACKAGE_NAME = 'com.wikipedia.app.dev';
 
-
-const {
-  WALDO_APP_VERSION_ID,
-  WALDO_APP_TOKEN,
-  WALDO_SESSION_ID,
-  WALDO_SHOW_SESSION,
-} = process.env;
+const { WALDO_APP_VERSION_ID, WALDO_APP_TOKEN, WALDO_SESSION_ID, WALDO_SHOW_SESSION } = process.env;
 if (!WALDO_APP_VERSION_ID && !WALDO_SESSION_ID) {
-  throw new Error(
-    "WALDO_APP_VERSION_ID or WALDO_SESSION_ID environment variable should be set"
-  );
+  throw new Error('WALDO_APP_VERSION_ID or WALDO_SESSION_ID environment variable should be set');
 }
 if (!WALDO_APP_TOKEN) {
-  throw new Error("WALDO_APP_TOKEN environment variable should be set");
+  throw new Error('WALDO_APP_TOKEN environment variable should be set');
 }
+
+export const SCREENSHOTS_DIR = `${__dirname}/screenshots`;
 
 const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
-    platformName: "iOS",
-    "appium:app": WALDO_APP_VERSION_ID,
-    "appium:options": {
+    platformName: 'iOS',
+    'appium:app': WALDO_APP_VERSION_ID,
+    'appium:options': {
       appWaitActivity: `${PACKAGE_NAME}.*`,
       appPackage: PACKAGE_NAME,
       bundleId: PACKAGE_NAME,
@@ -247,6 +242,18 @@ export const config: Options.Testrunner = {
     // Open Waldo session in browser if not in interactive mode
     if (WALDO_SHOW_SESSION && !WALDO_SESSION_ID) {
       await execP(`open "${browser.capabilities.replayUrl}"`);
+    }
+
+    // Create screenshots dir if necessary
+    const screenshotsDir = await access(SCREENSHOTS_DIR, constants.F_OK)
+      .then(() => true)
+      .catch(() => false);
+    if (!screenshotsDir) {
+      try {
+        await mkdir(SCREENSHOTS_DIR);
+      } catch (e: any) {
+        console.error(`Could not create screenshots folder: ${e.message}`);
+      }
     }
 
     console.log(`View live session: ${browser.capabilities.replayUrl}`);

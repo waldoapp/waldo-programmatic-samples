@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { SCREENSHOTS_DIR } from '../../wdio.conf.ts';
 import {
   type WaldoDriver,
   tapElement,
@@ -11,7 +12,7 @@ describe('Wikipedia - Onboarding', () => {
   it('onboarding', async () => {
     const device = driver as WaldoDriver;
     await tapElement(device, 'text', 'Next');
-    await device.saveScreenshot('./screenshots/screenshot-onboarding.png');
+    await device.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-onboarding.png`);
     // Do the next two screens by swiping instead
     // Swipe left from 95% of the screen to 5%
     await waitForElement(device, 'text', 'Next');
@@ -29,6 +30,6 @@ describe('Wikipedia - Onboarding', () => {
     await typeInElement(device, 'type', 'textField', today);
     await tapElement(device, 'text', 'Day of the year');
     await waitForElement(device, 'text', 'Day of the year', 5000, 500, true);
-    await device.saveScreenshot('./screenshots/screenshot-today.png');
+    await device.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-today.png`);
   });
 });

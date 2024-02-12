@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { ElementReference } from '@wdio/protocols/build/types';
 import axios from 'axios';
-import { getRemoteBaseUrl, getWdUrl } from '../config.ts';
+import { getRemoteBaseUrl, getWdUrl } from './config.ts';
 
 type BoundingBox = { width: number; height: number; top: number; left: number };
 export type AppiumElement = ElementReference & { ELEMENT: string };

@@ -26,22 +26,5 @@ You can get it by going to `https://app.waldo.com/applications/ios/configuration
 You can either set it as the environment variable `WALDO_APP_TOKEN` or paste it in [wdio.conf.ts](wdio.conf.ts)
 
 ```shell
-WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios WALDO_SHOW_SESSION=1 npm run wdio
-```
-
-## Editing/Creating tests interactively
-
-You can run your tests in interactive mode by using an existing Live session in Waldo.
-
-Just start a Session in https://app.waldo.com/applications/ios/sessions?appVersionId=wiki-ios
-
-You can then interact with the session in your browser and keep relaunching your script by reusing the same session and watching it live.
-
-The parameters to run your scripts in interactive mode are easily retrievable in the `Info` tab of your Live Waldo session, by clicking the `Use for scipt` button.
-This will copy the `WALDO_APP_TOKEN` and `WALDO_SESSION_ID` variables to your clipboard.
-
-![img.png](images/session-useforscript.png)
-
-```shell
-WALDO_APP_TOKEN=[YourToken] WALDO_SESSION_ID=[sessionId] npm run wdio
+WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios npm run wdio
 ```

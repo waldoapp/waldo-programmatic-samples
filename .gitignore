@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 .idea
-
+.DS_Store
 
 # script artefacts
 screenshots/

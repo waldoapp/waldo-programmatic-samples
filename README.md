@@ -1,44 +1,42 @@
 # Testing Wikipedia with Waldo Core API
 
+![CleanShot 2024-02-15 at 00 20 54](https://github.com/waldoapp/waldo-programmatic-samples/assets/2805640/4781c206-4223-4279-a6e5-7659d3a96489)
+
 ## Introduction
 
-This project extends the [WebdriverIO][webdriverio] mobile automation
-test framework by enabling a test script to run on the Waldo
-infrastructure.
+This project demonstrates how to script end-to-end (E2E) mobile tests
+with Waldo Core API. It includes a sample test script that shows how to
+use Waldo Core API to write and run a test on the Waldo infrastructure
+against the open-source [Wikipedia][wikipedia] iOS app.
 
-It includes a sample test script that demonstrates how to write and run
-a scripted test against the open-source [Wikipedia][wikipedia] iOS app.
+More importantly, this project allows you to use Waldo Core API to write
+and run _your own_ scripted tests on the Waldo infrastructure. Waldo
+Core API accomplishes this by extending the [WebdriverIO][webdriverio]
+mobile automation test framework.
 
-More importantly, this project allows you to write and run _your own_
-scripted tests on the Waldo infrastructure.
+## Requirements
 
-## Prerequisites
+### Waldo account
 
-To use Waldo Core API, you need to have access to a few tools. It is
-quite likely that you already have these tools installed on your system.
-
-### Code editor
-
-You will need a text editor or IDE to write your code. You can choose
-whichever one tickles your fancy. Some folks use [Visual Studio
-Code][vscode]. Others prefer [Webstorm][webstorm] or [Sublime
-Text][sublime]. Really, it does not matter.
+Using Waldo Core API requires you to have access to a [Waldo][waldo]
+account. If you do not have an account yet, you can sign up for one
+[here][signup].
 
 ### Node.js and npm
 
-You also need to install the [Node.js][nodejs] runtime and its bundled
-npm package manager onto your system. We recommend that you use the
+You also need to have the [Node.js][nodejs] runtime and its bundled npm
+package manager installed on your machine. We recommend that you use the
 latest long-term support (LTS) version.
 
-To check that Node.js is correctly installed, type the following
-commands into your terminal client:
+To check that Node.js and npm are correctly installed, type the
+following commands into your terminal client:
 
 ```sh
 node -v
 npm -v
 ```
 
-## Getting Started
+## Getting started
 
 1. Clone this repository:
     ```sh
@@ -58,16 +56,12 @@ npm -v
 
 ## First run
 
-This repo includes a sample test script that controls the Wikipedia iOS
-app.
+This repo includes a sample test script that runs the Wikipedia iOS app
+on the Waldo infrastructure. To connect to Waldo, you need to provide an
+_app token_. You can obtain one by visiting [the configuration page for
+your app][config].
 
-To run a test script on the Waldo infrastructure, you always need an app
-token.
-
-You can obtain one by visiting [the configuration page for your
-app][config].
-
-Once you have your app token in hand, you can either pass it as the
+Once you have your app token in hand, you can either specify it as the
 value of the  `WALDO_APP_TOKEN` environment variable, or paste it into
 [wdio.conf.ts](wdio.conf.ts).
 
@@ -77,8 +71,7 @@ WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios npm run wdio
 
 [config]:       https://app.waldo.com/applications/ios/configurations/general
 [nodejs]:       https://nodejs.org/
-[sublime]:      https://www.sublimetext.com/
-[vscode]:       https://code.visualstudio.com/
+[signup]:       https://app.waldo.com/signup
+[waldo]:        https://www.waldo.com/
 [webdriverio]:  https://webdriver.io/
-[webstorm]:     https://www.jetbrains.com/webstorm/
 [wikipedia]:    https://github.com/wikimedia/wikipedia-ios

@@ -10,17 +10,22 @@ use Waldo Core API to write and run a test on the Waldo infrastructure
 against the open-source [Wikipedia][wikipedia] iOS app.
 
 More importantly, this project allows you to use Waldo Core API to write
-and run _your own_ scripted tests on the Waldo infrastructure. Waldo
-Core API accomplishes this by extending the [WebdriverIO][webdriverio]
-mobile automation test framework.
+and run _your own_ scripted tests on the Waldo infrastructure.
+
+> **Note:** This project extends the [WebdriverIO][webdriverio] mobile
+> automation test framework to communicate with Waldo Core API. However,
+> since [Waldo Core API][coreapi] implements the [W3C WebDriver standard
+> endpoints][w3c], you can use _any_ automation test framework that
+> implements these endpoints.
 
 ## Requirements
 
 ### Waldo account
 
 Using Waldo Core API requires you to have access to a [Waldo][waldo]
-account. If you do not have an account yet, you can sign up for one
-[here][signup].
+account. This will enable you to obtain an app token to communicate with
+Waldo Core API (see below). If you do not have an account yet, you can
+sign up for one [here][signup].
 
 ### Node.js and npm
 
@@ -70,8 +75,10 @@ WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios npm run wdio
 ```
 
 [config]:       https://app.waldo.com/applications/ios/configurations/general
+[coreapi]:      https://docs.waldo.com/reference/postwdhubsession
 [nodejs]:       https://nodejs.org/
 [signup]:       https://app.waldo.com/signup
+[w3c]:          https://w3c.github.io/webdriver/#endpoints
 [waldo]:        https://www.waldo.com/
 [webdriverio]:  https://webdriver.io/
 [wikipedia]:    https://github.com/wikimedia/wikipedia-ios

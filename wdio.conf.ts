@@ -1,8 +1,11 @@
 import { exec } from 'node:child_process';
 import { access, mkdir, constants } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { promisify } from 'node:util';
+import { homedir } from 'node:os';
 import type { Options } from '@wdio/types';
 import { W3CCapabilities } from '@wdio/types/build/Capabilities';
+import { parse } from 'yaml';
 
 import { REMOTE_CONFIG } from './utils/config.ts';
 import { waitForSessionReady, WaldoDriver } from './utils/utils.ts';
@@ -11,12 +14,32 @@ const execP = promisify(exec);
 
 const PACKAGE_NAME = 'com.wikipedia.app.dev';
 
-const { WALDO_APP_VERSION_ID, WALDO_APP_TOKEN, WALDO_SESSION_ID, WALDO_SHOW_SESSION } = process.env;
-if (!WALDO_APP_VERSION_ID && !WALDO_SESSION_ID) {
-  throw new Error('WALDO_APP_VERSION_ID or WALDO_SESSION_ID environment variable should be set');
+const versionId = process.env.WALDO_APP_VERSION_ID || process.env.VERSION_ID;
+const showSession = process.env.WALDO_SHOW_SESSION || process.env.SHOW_SESSION;
+const requestedSessionId = process.env.WALDO_SESSION_ID || process.env.SESSION_ID;
+if (!versionId && !requestedSessionId) {
+  throw new Error('VERSION_ID or SESSION_ID environment variable should be set');
 }
-if (!WALDO_APP_TOKEN) {
-  throw new Error('WALDO_APP_TOKEN environment variable should be set');
+
+// Load the token from the environment, or default to the waldo config file
+let waldoToken = process.env.WALDO_APP_TOKEN || process.env.TOKEN;
+const waldoConfigFile = `${homedir()}/.waldo/config.yml`;
+if (!waldoToken) {
+  try {
+    const ymlContent = readFileSync(waldoConfigFile, 'utf-8');
+    const config = parse(ymlContent);
+    waldoToken = config.user_token;
+    console.log(`Successfully loaded user token from ${waldoConfigFile}`);
+  } catch (error: any) {
+    // File not existing is expected - any other error is not
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
+if (!waldoToken) {
+  throw new Error(`Token should be either set in environment TOKEN or in ${waldoConfigFile}`);
 }
 
 export const SCREENSHOTS_DIR = `${__dirname}/screenshots`;
@@ -25,7 +48,7 @@ const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
     platformName: 'iOS',
-    'appium:app': WALDO_APP_VERSION_ID,
+    'appium:app': versionId,
     'appium:options': {
       appWaitActivity: `${PACKAGE_NAME}.*`,
       appPackage: PACKAGE_NAME,
@@ -36,8 +59,8 @@ const requestedCapabilities: W3CCapabilities[] = [
       deviceName: 'iPhone 13',
       osVersion: '15.4',
       waldoMode: true,
-      token: WALDO_APP_TOKEN,
-      sessionId: WALDO_SESSION_ID,
+      token: waldoToken,
+      sessionId: requestedSessionId,
       waitSessionReady: false,
     },
   },
@@ -154,7 +177,7 @@ export const config: Options.Testrunner = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['appium'],
+  services: [],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -240,7 +263,7 @@ export const config: Options.Testrunner = {
    */
   async before(capabilities: any, _specs: string[], browser: WaldoDriver) {
     // Open Waldo session in browser if not in interactive mode
-    if (WALDO_SHOW_SESSION && !WALDO_SESSION_ID) {
+    if (showSession && !requestedSessionId) {
       await execP(`open "${browser.capabilities.replayUrl}"`);
     }
 

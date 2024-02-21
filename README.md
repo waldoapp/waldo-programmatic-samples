@@ -44,20 +44,22 @@ npm -v
 ## Getting started
 
 1. Clone this repository:
-    ```sh
-    git clone https://github.com/waldoapp/waldo-programmatic-samples.git
-    ```
+
+   ```sh
+   git clone https://github.com/waldoapp/waldo-programmatic-samples.git
+   ```
 
 2. Go to the root directory:
-    ```sh
-    cd waldo-programmatic-samples
-    ```
+
+   ```sh
+   cd waldo-programmatic-samples
+   ```
 
 3. Install the project dependencies:
 
-    ```sh
-    npm install
-    ```
+   ```sh
+   npm install
+   ```
 
 ## First run
 
@@ -67,18 +69,18 @@ _app token_. You can obtain one by visiting [the configuration page for
 your app][config].
 
 Once you have your app token in hand, you can either specify it as the
-value of the  `WALDO_APP_TOKEN` environment variable, or paste it into
+value of the `WALDO_APP_TOKEN` environment variable, or paste it into
 [wdio.conf.ts](wdio.conf.ts).
 
 ```shell
 WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios npm run wdio
 ```
 
-[config]:       https://app.waldo.com/applications/ios/configurations/general
-[coreapi]:      https://docs.waldo.com/reference/postwdhubsession
-[nodejs]:       https://nodejs.org/
-[signup]:       https://app.waldo.com/signup
-[w3c]:          https://w3c.github.io/webdriver/#endpoints
-[waldo]:        https://www.waldo.com/
-[webdriverio]:  https://webdriver.io/
-[wikipedia]:    https://github.com/wikimedia/wikipedia-ios
+[config]: https://app.waldo.com/applications/ios/configurations/general
+[coreapi]: https://docs.waldo.com/reference/postwdhubsession
+[nodejs]: https://nodejs.org/
+[signup]: https://app.waldo.com/signup
+[w3c]: https://w3c.github.io/webdriver/#endpoints
+[waldo]: https://www.waldo.com/
+[webdriverio]: https://webdriver.io/
+[wikipedia]: https://github.com/wikimedia/wikipedia-ios

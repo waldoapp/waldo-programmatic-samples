@@ -1,35 +1,27 @@
 import * as moment from 'moment';
 import { SCREENSHOTS_DIR } from '../../wdio.conf.ts';
-import {
-  type WaldoDriver,
-  tapElement,
-  typeInElement,
-  waitForElement,
-  swipeScreen,
-} from '../../utils/utils.ts';
 
 describe('Wikipedia - Onboarding', () => {
   it('onboarding', async () => {
-    const device = driver as WaldoDriver;
-    await tapElement(device, 'text', 'Next');
-    await device.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-onboarding.png`);
+    await driver.tapElement('text', 'Next');
+    await driver.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-onboarding.png`);
     // Do the next two screens by swiping instead
     // Swipe left from 95% of the screen to 5%
-    await waitForElement(device, 'text', 'Next');
-    await swipeScreen(device, 'horizontal', 95, 5);
-    await waitForElement(device, 'text', 'Next');
-    await swipeScreen(device, 'horizontal', 95, 5);
+    await driver.waitForElement('text', 'Next');
+    await driver.swipeScreen('horizontal', 95, 5);
+    // Wait for screen to be stable
+    await driver.waitForElement('text', 'Next', 5000, 500, true);
+    await driver.swipeScreen('horizontal', 95, 5);
 
-    await tapElement(device, 'text', 'Get started');
+    await driver.tapElement('text', 'Get started');
   });
 
   it("Search today's date", async () => {
-    const device = driver as WaldoDriver;
-    await tapElement(device, 'type', 'textField');
+    await driver.tapElement('type', 'textField');
     const today = moment().format('MMMM Do');
-    await typeInElement(device, 'type', 'textField', today);
-    await tapElement(device, 'text', 'Day of the year');
-    await waitForElement(device, 'text', 'Day of the year', 5000, 500, true);
-    await device.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-today.png`);
+    await driver.typeInElement('type', 'textField', today);
+    await driver.tapElement('text', 'Day of the year');
+    await driver.waitForElement('text', 'Day of the year', 5000, 500, true);
+    await driver.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-today.png`);
   });
 });

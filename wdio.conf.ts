@@ -8,7 +8,7 @@ import { W3CCapabilities } from '@wdio/types/build/Capabilities';
 import { parse } from 'yaml';
 
 import { REMOTE_CONFIG } from './utils/config.ts';
-import { waitForSessionReady, WaldoDriver } from './utils/utils.ts';
+import { waitForSessionReady, addDriverCommands } from './utils/utils.ts';
 
 const execP = promisify(exec);
 
@@ -262,6 +262,9 @@ export const config: Options.Testrunner = {
    * @param {object}         browser      instance of created browser/device session
    */
   async before(capabilities: any, _specs: string[], browser: WaldoDriver) {
+    // Add Waldo specific logic to the driver
+    addDriverCommands(browser);
+
     // Open Waldo session in browser if not in interactive mode
     if (showSession && !requestedSessionId) {
       await execP(`open "${browser.capabilities.replayUrl}"`);

@@ -1,13 +1,12 @@
 import * as _ from 'lodash';
-import { ElementReference } from '@wdio/protocols/build/types';
+import { command } from 'webdriver';
 import axios from 'axios';
+import type { ElementReference } from '@wdio/protocols/build/types';
+
 import { getRemoteBaseUrl, getWdUrl } from './config.ts';
 
 type BoundingBox = { width: number; height: number; top: number; left: number };
 export type AppiumElement = ElementReference & { ELEMENT: string };
-export type WaldoDriver = WebdriverIO.Browser & {
-  capabilities: Record<string, string> & { replayUrl: string };
-};
 export type SessionDevice = {
   model: string;
   os: 'android' | 'ios';
@@ -31,6 +30,20 @@ async function getSessionInfo(sessionId: string): Promise<SessionInfo> {
   const waldoSessionUrl = getWdUrl(`/session/${sessionId}`);
   const { data } = await axios(waldoSessionUrl);
   return data;
+}
+
+export async function getLatestBuilds(token: string) {
+  const { data } = await axios.get('https://api.waldo.com/versions', {
+    headers: {
+      authorization: `Upload-Token ${token}`,
+    },
+  });
+  return data;
+}
+
+export async function getLatestBuild(token: string) {
+  const builds = await getLatestBuilds(token);
+  return builds[0];
 }
 
 export async function waitForSessionReady(sessionId: string) {
@@ -234,6 +247,15 @@ export async function getTree(driver: WebdriverIO.Browser) {
   return JSON.parse(treeString);
 }
 
+export async function findInTree(driver: WebdriverIO.Browser, predicate: (n: any) => boolean) {
+  const tree = await getTree(driver);
+  const nodes: any[] = [];
+  for (const wind of tree.windows) {
+    nodes.push(...wind.nodes.filter((n: any) => predicate(n)));
+  }
+  return nodes;
+}
+
 export async function tapElement(
   driver: WebdriverIO.Browser,
   property: string,
@@ -244,6 +266,38 @@ export async function tapElement(
 ) {
   const element = await waitForElement(driver, property, value, timeout, delay, waitForStability);
   await driver.elementClick(element.ELEMENT);
+}
+
+/**
+ * Tap on the element at given position in the list of elements that validate the predicate
+ */
+export async function tapElementWith(
+  driver: WebdriverIO.Browser,
+  predicate: (n: any) => boolean,
+  position: number | 'first' | 'last' = 0,
+  retries: number = 3,
+  delay: number = 500,
+) {
+  for (let i = 0; i < retries; i += 1) {
+    const nodes = await findInTree(driver, predicate);
+    if (nodes.length > 0) {
+      let node;
+      if (position === 'last') {
+        node = _.last(nodes);
+      } else if (position === 'first') {
+        node = _.first(nodes);
+      } else if (nodes.length > position) {
+        node = nodes[position];
+      }
+
+      if (node) {
+        await tapCenterOfBox(node.box);
+        return;
+      }
+    }
+    await waitAsPromise(delay);
+  }
+  throw new Error(`Could not find node`);
 }
 
 export async function typeInElement(
@@ -258,4 +312,106 @@ export async function typeInElement(
   const element = await waitForElement(driver, property, value, timeout, delay, waitForStability);
   await driver.elementClick(element.ELEMENT);
   await driver.setValueImmediate(element.ELEMENT, text);
+}
+
+export async function addDriverCommands(driver: WebdriverIO.Browser) {
+  driver.addCommand(
+    'resetApp',
+    command('POST', '/session/:sessionId/appium/app/reset', {
+      command: 'reset',
+      description: 'application reset',
+      ref: 'http://appium.io/docs/en/commands/device/app/reset-app/',
+      parameters: [],
+    }),
+  );
+
+  driver.addCommand(
+    'tapElement',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      property: string,
+      value: any,
+      timeout: number = 5000,
+      delay: number = 500,
+      waitForStability: boolean = false,
+    ) {
+      return tapElement(this, property, value, timeout, delay, waitForStability);
+    },
+  );
+
+  driver.addCommand(
+    'tapElementWith',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      predicate: (n: any) => boolean,
+      position: number | 'first' | 'last' = 0,
+      retries: number = 3,
+      delay: number = 500,
+    ) {
+      return tapElementWith(this, predicate, position, retries, delay);
+    },
+  );
+
+  driver.addCommand(
+    'typeInElement',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      property: string,
+      value: any,
+      text: string,
+      timeout: number = 5000,
+      delay: number = 500,
+      waitForStability: boolean = false,
+    ) {
+      return typeInElement(this, property, value, text, timeout, delay, waitForStability);
+    },
+  );
+
+  driver.addCommand(
+    'tap',
+    async function commandFn(this: WebdriverIO.Browser, x: number, y: number) {
+      return performClick(this, x, y);
+    },
+  );
+
+  driver.addCommand(
+    'waitForElement',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      property: string,
+      value: any,
+      timeout: number = 5000,
+      delay: number = 500,
+      waitForStability: boolean = false,
+    ) {
+      return waitForElement(this, property, value, timeout, delay, waitForStability);
+    },
+  );
+
+  driver.addCommand(
+    'tapCenterOfBox',
+    // eslint-disable-next-line prefer-arrow-callback
+    async function commandFn(this: WebdriverIO.Browser, box: BoundingBox) {
+      return tapCenterOfBox(box);
+    },
+  );
+
+  driver.addCommand(
+    'getNodes',
+    async function commandFn(this: WebdriverIO.Browser, predicate: (n: any) => boolean) {
+      return findInTree(this, predicate);
+    },
+  );
+
+  driver.addCommand(
+    'swipeScreen',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      direction: SwipeDirection,
+      fromScreenPercent: number,
+      toScreenPercent: number,
+    ) {
+      return swipeScreen(this, direction, fromScreenPercent, toScreenPercent);
+    },
+  );
 }

@@ -15,6 +15,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
   },
+  "ts-node": {
+    "files": true,
+  },
   "include": [
     "types/global.d.ts",
     "utils",

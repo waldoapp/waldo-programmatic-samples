@@ -4,8 +4,8 @@ import axios from 'axios';
 import type { ElementReference } from '@wdio/protocols/build/types';
 
 import { getRemoteBaseUrl, getWdUrl } from './config.ts';
+import { BoundingBox } from '../types/waldo.ts';
 
-type BoundingBox = { width: number; height: number; top: number; left: number };
 export type AppiumElement = ElementReference & { ELEMENT: string };
 export type SessionDevice = {
   model: string;

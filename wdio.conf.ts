@@ -9,6 +9,7 @@ import { parse } from 'yaml';
 
 import { REMOTE_CONFIG } from './utils/config.ts';
 import { waitForSessionReady, addDriverCommands } from './utils/utils.ts';
+import { WaldoDriver } from './types/waldo.ts';
 
 const execP = promisify(exec);
 

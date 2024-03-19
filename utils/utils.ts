@@ -1,3 +1,6 @@
+import { resolve as pathResolve, parse } from 'node:path';
+import { mkdir, access } from 'node:fs/promises';
+
 import * as _ from 'lodash';
 import { command } from 'webdriver';
 import axios from 'axios';
@@ -314,7 +317,7 @@ export async function typeInElement(
   await driver.setValueImmediate(element.ELEMENT, text);
 }
 
-export async function addDriverCommands(driver: WebdriverIO.Browser) {
+export function addDriverCommands(driver: WebdriverIO.Browser) {
   driver.addCommand(
     'resetApp',
     command('POST', '/session/:sessionId/appium/app/reset', {
@@ -323,6 +326,37 @@ export async function addDriverCommands(driver: WebdriverIO.Browser) {
       ref: 'http://appium.io/docs/en/commands/device/app/reset-app/',
       parameters: [],
     }),
+  );
+
+  driver.addCommand(
+    'tapElement',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      property: string,
+      value: any,
+      timeout: number = 5000,
+      delay: number = 500,
+      waitForStability: boolean = false,
+    ) {
+      return tapElement(this, property, value, timeout, delay, waitForStability);
+    },
+  );
+
+  // Thin wrapper around saveScreenshot to ensure that the destination directory always exists
+  driver.addCommand(
+    'screenshot',
+    async function commandFn(this: WebdriverIO.Browser, relativeDestination: string) {
+      const screenshotPath = pathResolve(`${__dirname}/../screenshots/${relativeDestination}`);
+      const { dir } = parse(screenshotPath);
+      const exists = await access(dir)
+        .then(() => true)
+        .catch(() => false);
+      if (!exists) {
+        console.log(`Initialize screenshot dir ${dir}`);
+        await mkdir(dir, { recursive: true });
+      }
+      await this.saveScreenshot(screenshotPath);
+    },
   );
 
   driver.addCommand(

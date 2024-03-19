@@ -6,7 +6,7 @@ export const REMOTE_CONFIG = {
 };
 
 export function getRemoteBaseUrl() {
-  return `${REMOTE_CONFIG.protocol}://${REMOTE_CONFIG.hostname}`;
+  return `${REMOTE_CONFIG.protocol}://${REMOTE_CONFIG.hostname}:${REMOTE_CONFIG.port}`;
 }
 
 export function getWdUrl(path: string) {

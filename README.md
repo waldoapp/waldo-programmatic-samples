@@ -5,9 +5,17 @@
 ## Introduction
 
 This project demonstrates how to script end-to-end (E2E) mobile tests
-with Waldo Core API. It includes a sample test script that shows how to
+with Waldo Core API. It includes sample test scripts that show how to
 use Waldo Core API to write and run a test on the Waldo infrastructure
-against the open-source [Wikipedia][wikipedia] iOS app.
+against the open-source [Wikipedia iOS app][wikipedia-ios] or
+[Wikipedia Android app][wikipedia-android].
+
+The scripts are located in the [test directory](test/specs):
+
+- in the subdirectory [ios](test/specs/ios) are the samples meant to run
+  on the iOS app
+- in the subdirectory [android](test/specs/android) are the samples meant to run
+  on the Android app
 
 More importantly, this project allows you to use Waldo Core API to write
 and run _your own_ scripted tests on the Waldo infrastructure.
@@ -23,7 +31,7 @@ and run _your own_ scripted tests on the Waldo infrastructure.
 ### Waldo account
 
 Using Waldo Core API requires you to have access to a [Waldo][waldo]
-account. This will enable you to obtain an app token to communicate with
+account. This will enable you to obtain a token to communicate with
 Waldo Core API (see below). If you do not have an account yet, you can
 sign up for one [here][signup].
 
@@ -63,24 +71,34 @@ npm -v
 
 ## First run
 
-This repo includes a sample test script that runs the Wikipedia iOS app
-on the Waldo infrastructure. To connect to Waldo, you need to provide an
-_app token_. You can obtain one by visiting [the configuration page for
-your app][config].
+This repo includes sample test scripts that runs the Wikipedia iOS app
+or the Wikipedia Android app on the Waldo infrastructure. To connect to
+Waldo, you need to provide your API token.
+You can obtain one by visiting [your settings page][config].
 
-Once you have your app token in hand, you can either specify it as the
-value of the `WALDO_APP_TOKEN` environment variable, or paste it into
-[wdio.conf.ts](wdio.conf.ts).
+Once you have your API token in hand, you can specify it as the
+value of the `WALDO_APP_TOKEN` environment variable. see
+[wdio.conf.ts](wdio.conf.ts) for more details.
+
+Run the iOS sample script:
 
 ```shell
-WALDO_APP_TOKEN=[YourToken] WALDO_APP_VERSION_ID=wiki-ios npm run wdio
+WALDO_APP_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio ios
 ```
 
-[config]: https://app.waldo.com/applications/ios/configurations/general
+Run the Android sample script:
+
+```shell
+WALDO_APP_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio android
+```
+
+[settings]: https://app.waldo.com/settings/profile
 [coreapi]: https://docs.waldo.com/reference/postwdhubsession
 [nodejs]: https://nodejs.org/
 [signup]: https://app.waldo.com/signup
+[config]: https://app.waldo.com/settings/profile
 [w3c]: https://w3c.github.io/webdriver/#endpoints
 [waldo]: https://www.waldo.com/
 [webdriverio]: https://webdriver.io/
-[wikipedia]: https://github.com/wikimedia/wikipedia-ios
+[wikipedia-ios]: https://github.com/wikimedia/wikipedia-ios
+[wikipedia-android]: https://github.com/wikimedia/apps-android-wikipedia

@@ -1,5 +1,4 @@
 import { exec } from 'node:child_process';
-import { access, mkdir, constants } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { promisify } from 'node:util';
 import { homedir } from 'node:os';
@@ -22,9 +21,36 @@ if (!versionId && !requestedSessionId) {
   throw new Error('VERSION_ID or SESSION_ID environment variable should be set');
 }
 
+// This sample repository contains tests for Wikipedia iOS or Wikipedia Android.
+// The proper target can be specified in the command, and we default to iOS
+let specTarget = 'ios';
+if (process.argv.length >= 5) {
+  const target = process.argv[4];
+  if (target === 'ios' || target === 'android') {
+    specTarget = target;
+  } else {
+    throw new Error(`Unrecognized spec target: ${target}
+Usage: npm run wdio {ios|android}`);
+  }
+}
+const iOS = specTarget === 'ios';
+
+// The requested device is completely configurable. See https://core.waldo.com/devices for the list of all supported
+// devices. Simply make sure to run the Android scenario on an Android device and vice versa.
+const requestedDevice = iOS
+  ? {
+      deviceName: 'iPhone 15',
+      osVersion: '17',
+    }
+  : {
+      deviceName: 'Pixel 7',
+      osVersion: '33',
+    };
+const platformName = iOS ? 'iOS' : 'Android';
+
 // Load the token from the environment, or default to the waldo config file
 let waldoToken = process.env.WALDO_APP_TOKEN || process.env.TOKEN;
-const waldoConfigFile = `${homedir()}/.waldo/config.yml`;
+const waldoConfigFile = `${homedir()}/.waldo/profile.yml`;
 if (!waldoToken) {
   try {
     const ymlContent = readFileSync(waldoConfigFile, 'utf-8');
@@ -43,12 +69,10 @@ if (!waldoToken) {
   throw new Error(`Token should be either set in environment TOKEN or in ${waldoConfigFile}`);
 }
 
-export const SCREENSHOTS_DIR = `${__dirname}/screenshots`;
-
 const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
-    platformName: 'iOS',
+    platformName,
     'appium:app': versionId,
     'appium:options': {
       appWaitActivity: `${PACKAGE_NAME}.*`,
@@ -57,8 +81,7 @@ const requestedCapabilities: W3CCapabilities[] = [
     },
     'waldo:displayName': 'Waldo Driver Session',
     'waldo:options': {
-      deviceName: 'iPhone 13',
-      osVersion: '15.4',
+      ...requestedDevice,
       waldoMode: true,
       token: waldoToken,
       sessionId: requestedSessionId,
@@ -107,7 +130,7 @@ export const config: Options.Testrunner = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: ['./test/specs/**/*.ts'],
+  specs: [`./test/specs/${specTarget}/**/*.ts`],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -269,18 +292,6 @@ export const config: Options.Testrunner = {
     // Open Waldo session in browser if not in interactive mode
     if (showSession && !requestedSessionId) {
       await execP(`open "${browser.capabilities.replayUrl}"`);
-    }
-
-    // Create screenshots dir if necessary
-    const screenshotsDir = await access(SCREENSHOTS_DIR, constants.F_OK)
-      .then(() => true)
-      .catch(() => false);
-    if (!screenshotsDir) {
-      try {
-        await mkdir(SCREENSHOTS_DIR);
-      } catch (e: any) {
-        console.error(`Could not create screenshots folder: ${e.message}`);
-      }
     }
 
     console.log(`View live session: ${browser.capabilities.replayUrl}`);

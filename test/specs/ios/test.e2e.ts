@@ -1,10 +1,9 @@
 import * as moment from 'moment';
-import { SCREENSHOTS_DIR } from '../../wdio.conf.ts';
 
 describe('Wikipedia - Onboarding', () => {
   it('onboarding', async () => {
     await driver.tapElement('text', 'Next');
-    await driver.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-onboarding.png`);
+    await driver.screenshot(`ios/screenshot-onboarding.png`);
     // Do the next two screens by swiping instead
     // Swipe left from 95% of the screen to 5%
     await driver.waitForElement('text', 'Next');
@@ -21,7 +20,7 @@ describe('Wikipedia - Onboarding', () => {
     const today = moment().format('MMMM Do');
     await driver.typeInElement('type', 'textField', today);
     await driver.tapElement('text', 'Day of the year');
-    await driver.waitForElement('text', 'Day of the year', 5000, 500, true);
-    await driver.saveScreenshot(`${SCREENSHOTS_DIR}/screenshot-today.png`);
+    await driver.waitForElement('text', 'Day of the year', 10_000, 500, true);
+    await driver.screenshot(`ios/screenshot-today.png`);
   });
 });

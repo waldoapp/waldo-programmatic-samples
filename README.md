@@ -30,24 +30,21 @@ and run _your own_ scripted tests on the Waldo infrastructure.
 
 ### Waldo account
 
-Using Waldo Core API requires you to have access to a [Waldo][waldo]
-account. This will enable you to obtain a token to communicate with
-Waldo Core API (see below). If you do not have an account yet, you can
-sign up for one [here][signup].
+Using Waldo Core API requires you to have a [Waldo][waldo] account: [sign up here][signup].
 
-### Node.js and npm
+### Node.js
 
-You also need to have the [Node.js][nodejs] runtime and its bundled npm
-package manager installed on your machine. We recommend that you use the
+You also need to have the [Node.js][nodejs] runtime installed on your machine. We recommend that you use the
 latest long-term support (LTS) version.
 
-To check that Node.js and npm are correctly installed, type the
-following commands into your terminal client:
+To check that Node.js is correctly installed, type the
+following command into your terminal client:
 
 ```sh
 node -v
-npm -v
 ```
+
+Refer to the [nodejs.org installation instructions](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) for more information.
 
 ## Getting started
 
@@ -71,31 +68,43 @@ npm -v
 
 ## First run
 
-This repo includes sample test scripts that runs the Wikipedia iOS app
-or the Wikipedia Android app on the Waldo infrastructure. To connect to
-Waldo, you need to provide your API token.
-You can obtain one by visiting [your settings page][config].
+The command below will run our sample script targeting a Wikipedia sample app running on a Waldo simulator in the cloud.
 
-Once you have your API token in hand, you can specify it as the
-value of the `WALDO_APP_TOKEN` environment variable. see
-[wdio.conf.ts](wdio.conf.ts) for more details.
-
-Run the iOS sample script:
+Run the [iOS sample script](test/specs/ios):
 
 ```shell
 WALDO_APP_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio ios
 ```
 
-Run the Android sample script:
+Run the [Android sample script](test/specs/android):
 
 ```shell
 WALDO_APP_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio android
 ```
 
-[settings]: https://app.waldo.com/settings/profile
+You will find your auth token in [your settings page][https://app.waldo.com/settings/profile].
+
+## Iterate on your script with interactive sessions
+
+Interactive sessions are meant to provide a quick feedback loop when you work on your script.
+
+By default, the `npm run wdio` command asks Waldo for a brand new session (meaning a fresh simulator/emulator image where the app corresponding to `WALDO_APP_VERSION_ID` is installed): this takes about 20 seconds to set up. If you provide the id of an _ongoing_ Waldo session (they are prefixed with `sess-`, such as `sess-0367d672ba0051af`), Waldo re-uses that specific session, and will not kill it at the end of the script. Thus you have the opportunity to iterate on your script and relaunch the command: all without having to wait for a new session to be set up. This provides a very quick feedback loop when iterating on your scripts. The session id can be found in the URL of your manual session or in the info tab of this session.
+
+```shell
+WALDO_APP_TOKEN=[YourToken] WALDO_SESSION_ID=[YourSessionID] npm run wdio
+```
+
+where:
+
+- `WALDO_APP_TOKEN` is your auth token.
+- `WALDO_APP_VERSION_ID` is the `id` of a specific build file of an app (hence the "app version") you want to target with your test. `wiki-ios` is a shortcut refering to our iOS sample app (wikipedia).
+- `SHOW_SESSION` is an optional argument, default to `false`. When set to `true`, the command will spin up a new tab on your default browser targeting the URL where you'll see the live stream of your test exectution.
+- `WALDO_SESSION_ID` is an optional argument, referring to the `id` of an ongoing manual session you launched from https://app.waldo.com and that you want to target with your script.
+
+[config]: https://app.waldo.com/applications/ios/configurations/general
 [coreapi]: https://docs.waldo.com/reference/postwdhubsession
 [nodejs]: https://nodejs.org/
-[signup]: https://app.waldo.com/signup
+[signup]: https://app.waldo.com/register
 [config]: https://app.waldo.com/settings/profile
 [w3c]: https://w3c.github.io/webdriver/#endpoints
 [waldo]: https://www.waldo.com/

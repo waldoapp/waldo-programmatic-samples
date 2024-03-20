@@ -1,5 +1,5 @@
 import { exec } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { promisify } from 'node:util';
 import { homedir } from 'node:os';
 import type { Options } from '@wdio/types';
@@ -12,51 +12,21 @@ import { WaldoDriver } from './types/waldo.ts';
 
 const execP = promisify(exec);
 
-const PACKAGE_NAME = 'com.wikipedia.app.dev';
+function stopOnError(message: string) {
+  console.error(`Could not run script: ${message}`, '\n');
 
-const versionId = process.env.WALDO_APP_VERSION_ID || process.env.VERSION_ID;
-const showSession = process.env.WALDO_SHOW_SESSION || process.env.SHOW_SESSION;
-const requestedSessionId = process.env.WALDO_SESSION_ID || process.env.SESSION_ID;
-if (!versionId && !requestedSessionId) {
-  throw new Error('VERSION_ID or SESSION_ID environment variable should be set');
+  process.exit(1);
 }
 
-// This sample repository contains tests for Wikipedia iOS or Wikipedia Android.
-// The proper target can be specified in the command, and we default to iOS
-let specTarget = 'ios';
-if (process.argv.length >= 5) {
-  const target = process.argv[4];
-  if (target === 'ios' || target === 'android') {
-    specTarget = target;
-  } else {
-    throw new Error(`Unrecognized spec target: ${target}
-Usage: npm run wdio {ios|android}`);
-  }
-}
-const iOS = specTarget === 'ios';
-
-// The requested device is completely configurable. See https://core.waldo.com/devices for the list of all supported
-// devices. Simply make sure to run the Android scenario on an Android device and vice versa.
-const requestedDevice = iOS
-  ? {
-      deviceName: 'iPhone 15',
-      osVersion: '17',
-    }
-  : {
-      deviceName: 'Pixel 7',
-      osVersion: '33',
-    };
-const platformName = iOS ? 'iOS' : 'Android';
-
-// Load the token from the environment, or default to the waldo config file
-let waldoToken = process.env.WALDO_APP_TOKEN || process.env.TOKEN;
-const waldoConfigFile = `${homedir()}/.waldo/profile.yml`;
+// Load the token from the environment, or default to the waldo profile file
+let waldoToken = process.env.WALDO_API_TOKEN || process.env.TOKEN;
+const waldoProfileFile = `${homedir()}/.waldo/profile.yml`;
 if (!waldoToken) {
   try {
-    const ymlContent = readFileSync(waldoConfigFile, 'utf-8');
+    const ymlContent = readFileSync(waldoProfileFile, 'utf-8');
     const config = parse(ymlContent);
     waldoToken = config.user_token;
-    console.log(`Successfully loaded user token from ${waldoConfigFile}`);
+    console.log(`Successfully loaded user token from ${waldoProfileFile}`);
   } catch (error: any) {
     // File not existing is expected - any other error is not
     if (error.code !== 'ENOENT') {
@@ -66,19 +36,56 @@ if (!waldoToken) {
 }
 
 if (!waldoToken) {
-  throw new Error(`Token should be either set in environment TOKEN or in ${waldoConfigFile}`);
+  stopOnError(`No WALDO_API_TOKEN found.
+
+refer to https://github.com/waldoapp/waldo-programmatic-samples#authentication`);
 }
+
+// Load the params for the test
+const versionId = process.env.WALDO_APP_VERSION_ID || process.env.VERSION_ID;
+const showSession = process.env.WALDO_SHOW_SESSION || process.env.SHOW_SESSION;
+const requestedSessionId = process.env.WALDO_SESSION_ID || process.env.SESSION_ID;
+if (!versionId && !requestedSessionId) {
+  stopOnError(`Either VERSION_ID or SESSION_ID environment variable should be set.
+
+refer to https://github.com/waldoapp/waldo-programmatic-samples`);
+}
+
+// The sample repository contains different set of tests to illustrate different capacities of Waldo.
+// We force to run only one set of tests at a time.
+let sampleDirectory = 'ios';
+if (process.argv.length >= 5) {
+  const sampleDirectories = readdirSync(`${__dirname}/samples`);
+  const directory = process.argv[4];
+  if (sampleDirectories.includes(directory)) {
+    sampleDirectory = directory;
+  } else {
+    stopOnError(`Unrecognized sample directory "${directory}"
+
+Usage: npm run wdio {${sampleDirectories.map((d) => ` ${d} `).join('|')}}`);
+  }
+}
+// We consider the default platform to be iOS.
+const isIOS = !sampleDirectory.endsWith('-android');
+
+// The requested device is completely configurable. See https://core.waldo.com/devices for the list of all supported
+// devices. Simply make sure to run the Android scenario on an Android device and vice versa.
+const requestedDevice = isIOS
+  ? {
+      deviceName: 'iPhone 15',
+      osVersion: '17',
+    }
+  : {
+      deviceName: 'Pixel 7',
+      osVersion: '33',
+    };
+const platformName = isIOS ? 'iOS' : 'Android';
 
 const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
     platformName,
     'appium:app': versionId,
-    'appium:options': {
-      appWaitActivity: `${PACKAGE_NAME}.*`,
-      appPackage: PACKAGE_NAME,
-      bundleId: PACKAGE_NAME,
-    },
     'waldo:displayName': 'Waldo Driver Session',
     'waldo:options': {
       ...requestedDevice,
@@ -130,7 +137,7 @@ export const config: Options.Testrunner = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: [`./test/specs/${specTarget}/**/*.ts`],
+  specs: [`./samples/${sampleDirectory}/**/*.ts`],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -161,7 +168,7 @@ export const config: Options.Testrunner = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'info',
+  logLevel: 'warn',
   //
   // Set specific log levels per logger
   // loggers:
@@ -172,10 +179,9 @@ export const config: Options.Testrunner = {
   // - @wdio/sumologic-reporter
   // - @wdio/cli, @wdio/config, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  // logLevels: {
-  //     webdriver: 'info',
-  //     '@wdio/appium-service': 'info'
-  // },
+  logLevels: {
+    webdriver: 'info',
+  },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).

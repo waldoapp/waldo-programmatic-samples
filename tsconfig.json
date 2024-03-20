@@ -21,7 +21,7 @@
   "include": [
     "types/global.d.ts",
     "utils",
-    "test",
+    "samples",
     "wdio.conf.ts",
     "node_modules/@wdio/globals/types.d.ts",
   ],

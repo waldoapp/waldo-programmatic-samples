@@ -1,6 +1,11 @@
 import * as moment from 'moment/moment';
 
-describe('Wikipedia - Onboarding', () => {
+/**
+ * This is an example script that interacts with the Wikipedia app
+ * and searches for the article about today's date
+ */
+
+describe('Wikipedia Android - Onboarding', () => {
   it('onboarding', async () => {
     await driver.tapElement('text', 'CONTINUE');
     await driver.screenshot(`android/screenshot-onboarding.png`);

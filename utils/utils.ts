@@ -53,7 +53,7 @@ export async function waitForSessionReady(sessionId: string) {
   const sessionInfo = await getSessionInfo(sessionId);
   console.log(`Preparing device and installing your application...`);
   if (sessionInfo.status === 'setup') {
-    await waitAsPromise(3000);
+    await waitAsPromise(5000);
     await waitForSessionReady(sessionId);
     return;
   }

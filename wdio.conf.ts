@@ -46,7 +46,7 @@ const versionId = process.env.WALDO_APP_VERSION_ID || process.env.VERSION_ID;
 const showSession = process.env.WALDO_SHOW_SESSION || process.env.SHOW_SESSION;
 const requestedSessionId = process.env.WALDO_SESSION_ID || process.env.SESSION_ID;
 if (!versionId && !requestedSessionId) {
-  stopOnError(`Either VERSION_ID or SESSION_ID environment variable should be set.
+  stopOnError(`Either VERSION_ID or SESSION_ID environment variable must be set.
 
 refer to https://github.com/waldoapp/waldo-programmatic-samples`);
 }
@@ -66,7 +66,7 @@ Usage: npm run wdio {${sampleDirectories.map((d) => ` ${d} `).join('|')}}`);
   }
 }
 // We consider the default platform to be iOS.
-const isIOS = !sampleDirectory.endsWith('-android');
+const isIOS = !sampleDirectory.includes('android');
 
 // The requested device is completely configurable. See https://core.waldo.com/devices for the list of all supported
 // devices. Simply make sure to run the Android scenario on an Android device and vice versa.

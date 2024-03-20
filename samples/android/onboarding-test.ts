@@ -6,7 +6,7 @@ import * as moment from 'moment/moment';
  */
 
 describe('Wikipedia Android - Onboarding', () => {
-  it('onboarding', async () => {
+  it('goes through onboarding', async () => {
     await driver.tapElement('text', 'CONTINUE');
     await driver.screenshot(`android/screenshot-onboarding.png`);
 

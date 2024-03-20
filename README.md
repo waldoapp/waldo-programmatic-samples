@@ -94,6 +94,10 @@ command.
 
 Go to [your settings page][config] and export the token as `WALDO_API_TOKEN`.
 
+```bash
+export WALDO_API_TOKEN=[YourToken]
+```
+
 For the rest of the documentation, we will assume that you have done so.
 
 ## Iterate on your script with interactive sessions
@@ -116,7 +120,7 @@ Go to https://app.waldo.com/applications/ios/sessions?versionId=wiki
 Then in your terminal, launch:
 
 ```shell
-WALDO_API_TOKEN=[YourToken] SESSION_ID=[YourSessionID] npm run wdio ios
+SESSION_ID=[YourSessionID] npm run wdio ios
 ```
 
 ### Launch an interactive session for Android
@@ -126,17 +130,16 @@ Go to https://app.waldo.com/applications/android/sessions?versionId=wiki
 Then in your terminal, launch:
 
 ```shell
-WALDO_API_TOKEN=[YourToken] SESSION_ID=[YourSessionID] npm run wdio android
+SESSION_ID=[YourSessionID] npm run wdio android
 ```
 
 ## List of supported arguments
 
-- `WALDO_API_TOKEN` is your auth token.
+- `WALDO_API_TOKEN` is your API token (can be found in [your settings page][config])
 - `VERSION_ID` is the `id` of a specific build file of an app (hence the "app version") you want to target with your test. `wiki` is a shortcut referring to our iOS sample app (wikipedia).
 - `SHOW_SESSION` is an optional argument, default to `false`. When set to `true`, the command will spin up a new tab on your default browser targeting the URL where you'll see the live stream of your test execution.
 - `SESSION_ID` is an optional argument, referring to the `id` of an ongoing manual session you launched from https://app.waldo.com and that you want to target with your script.
 
-[config]: https://app.waldo.com/applications/ios/configurations/general
 [coreapi]: https://docs.waldo.com/reference/postwdhubsession
 [nodejs]: https://nodejs.org/
 [signup]: https://app.waldo.com/register

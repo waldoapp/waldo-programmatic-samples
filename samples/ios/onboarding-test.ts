@@ -6,7 +6,7 @@ import * as moment from 'moment';
  */
 
 describe('Wikipedia iOS - Onboarding', () => {
-  it('onboarding', async () => {
+  it('goes through onboarding', async () => {
     await driver.tapElement('text', 'Next');
     await driver.screenshot(`ios/screenshot-onboarding.png`);
     // Do the next two screens by swiping instead

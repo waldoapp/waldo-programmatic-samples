@@ -35,20 +35,6 @@ async function getSessionInfo(sessionId: string): Promise<SessionInfo> {
   return data;
 }
 
-export async function getLatestBuilds(token: string) {
-  const { data } = await axios.get('https://api.waldo.com/versions', {
-    headers: {
-      authorization: `Upload-Token ${token}`,
-    },
-  });
-  return data;
-}
-
-export async function getLatestBuild(token: string) {
-  const builds = await getLatestBuilds(token);
-  return builds[0];
-}
-
 export async function waitForSessionReady(sessionId: string) {
   const sessionInfo = await getSessionInfo(sessionId);
   console.log(`Preparing device and installing your application...`);

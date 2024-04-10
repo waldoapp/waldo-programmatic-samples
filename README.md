@@ -1,23 +1,15 @@
-# Testing Wikipedia with Waldo Core API
+# Testing with Waldo Core API
 
 ![CleanShot 2024-02-15 at 00 20 54](https://github.com/waldoapp/waldo-programmatic-samples/assets/2805640/4781c206-4223-4279-a6e5-7659d3a96489)
 
 ## Introduction
 
-This project demonstrates how to script end-to-end (E2E) mobile tests
-with Waldo Core API. It includes sample test scripts that show how to
-use Waldo Core API to write and run a test on the Waldo infrastructure
-against the open-source [Wikipedia iOS app][wikipedia-ios] or
-[Wikipedia Android app][wikipedia-android].
+This project provides the scaffolding to easily build end-to-end
+(E2E) scripts on your mobile app using Waldo Core API.
 
-The scripts are located under [./samples](samples):
-
-- [ios/onboarding-test.ts](samples/ios/onboarding-test.ts) is the script for iOS
-- [android/onboarding-test.ts](samples/android/onboarding-test.ts) is the script
-  for Android
-
-More importantly, this project allows you to use Waldo Core API to write
-and run _your own_ scripted tests on the Waldo infrastructure.
+It also includes some samples in the [samples directory](./samples) so that
+you can quickly familiarize yourself with the capabilities of Waldo Core API. You can
+learn more in the [README](./samples/README.md) for this directory.
 
 > **Note:** This project extends the [WebdriverIO][webdriverio] mobile
 > automation test framework to communicate with Waldo Core API. However,
@@ -47,13 +39,21 @@ Refer to the [nodejs.org installation instructions](https://nodejs.org/en/learn/
 
 ## Getting started
 
+The best way to discover scripting with Waldo is to follow our guide in the product:
+
+https://app.waldo.com/applications/0/sessions?guide=wikipedia-programmatic
+
+It describes the instructions below, as well as shows you how to edit a script.
+
+### Onetime setup
+
 1. Clone this repository:
 
    ```sh
    git clone https://github.com/waldoapp/waldo-programmatic-samples.git
    ```
 
-2. Go to the root directory:
+2. Navigate to the root directory:
 
    ```sh
    cd waldo-programmatic-samples
@@ -65,80 +65,151 @@ Refer to the [nodejs.org installation instructions](https://nodejs.org/en/learn/
    npm install
    ```
 
-## First run
+4. Go to [your settings page][config] to find your API token; then run the following command:
 
-The command below will run our sample script targeting a Wikipedia sample app running on a Waldo simulator in the cloud.
+   ```sh
+   npm run authenticate [YourToken]
+   ```
 
-Run the [iOS sample script](samples/ios/onboarding-test.ts):
+### First run
 
-```shell
-WALDO_API_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio ios
-```
+To validate that you have properly configured everything, you can run one of our sample scripts targeting
+the Wikipedia app.
 
-Run the [Android sample script](samples/android/onboarding-test.ts):
-
-```shell
-WALDO_API_TOKEN=[YourToken] VERSION_ID=wiki npm run wdio android
-```
-
-You will find your API token in [your settings page][config].
-
-## Authentication
-
-In the first run above, we are explicitly passing the token to each command invocation, but
-this can quickly become cumbersome.
-
-We recommend that you export your API token in your environment permanently. This token is
-long-lived, so once it's set you should not have to worry about carrying it around in every
-command.
-
-Go to [your settings page][config] and export the token as `WALDO_API_TOKEN`.
-
-```bash
-export WALDO_API_TOKEN=[YourToken]
-```
-
-For the rest of the documentation, we will assume that you have done so.
-
-## Iterate on your script with interactive sessions
-
-Interactive sessions are meant to provide a quick feedback loop when you work on your script.
-
-By default, the `npm run wdio` command asks Waldo for a brand new session (meaning a fresh
-simulator/emulator image where the app corresponding to `VERSION_ID` is installed): this
-takes about 20 seconds to set up. If you provide the id of an _ongoing_ Waldo session (they
-are prefixed with `sess-`, such as `sess-0367d672ba0051af`), Waldo re-uses that specific
-session, and will not kill it at the end of the script. Thus, you have the opportunity to
-iterate on your script and relaunch the command: all without having to wait for a new
-session to be set up. This provides a very quick feedback loop when iterating on your scripts.
-The session id can be found in the URL of your manual session or in the info tab of this session.
-
-### Launch an interactive session for iOS
-
-Go to https://app.waldo.com/applications/ios/sessions?versionId=wiki
-
-Then in your terminal, launch:
+For instance, you can run the [iOS sample script](samples/ios/onboarding-test.ts):
 
 ```shell
-SESSION_ID=[YourSessionID] npm run wdio ios
+SHOW_SESSION=1 npm run sample ios
 ```
 
-### Launch an interactive session for Android
-
-Go to https://app.waldo.com/applications/android/sessions?versionId=wiki
-
-Then in your terminal, launch:
+Similary, you can run the [Android sample script](samples/android/onboarding-test.ts):
 
 ```shell
-SESSION_ID=[YourSessionID] npm run wdio android
+SHOW_SESSION=1 npm run sample android
 ```
 
-## List of supported arguments
+## Run modes
 
-- `WALDO_API_TOKEN` is your API token (can be found in [your settings page][config])
-- `VERSION_ID` is the `id` of a specific build file of an app (hence the "app version") you want to target with your test. `wiki` is a shortcut referring to our iOS sample app (wikipedia).
-- `SHOW_SESSION` is an optional argument, default to `false`. When set to `true`, the command will spin up a new tab on your default browser targeting the URL where you'll see the live stream of your test execution.
-- `SESSION_ID` is an optional argument, referring to the `id` of an ongoing manual session you launched from https://app.waldo.com and that you want to target with your script.
+When you execute a script that uses Waldo Core API, the script always uses a remote device session on a simulator/emulator
+running within the Waldo infrastructure.
+
+This has many advantages:
+
+- **simplicity**: the setup to execute or edit an E2E script locally only takes a few minutes: no more full Appium
+  install on your local machine or tweaking of system configurations.
+- **universality**: wherever the script executes, it targets the same remote device environment, and therefore you know
+  how it will behave: no more debugging local versus CI device conditions.
+- **collaboration**: one consequence of this _simplicity_ and _universality_ is the ease of working together with
+  the rest of your development team.
+- **full observability**: since everything runs remotely within the Waldo infrastructure, rich artifacts are captured
+  from every device session. These session replays can be accessed at any time in the future at
+  https://app.waldo.com/applications/0/replays.
+
+Since you do not necessarily want to run device sessions in the same way for all use cases (development, CI
+execution, etc.), there are 3 modes to run scripts:
+
+### Background execution
+
+In this mode, your script interacts via Waldo Core API with a freshly created remote
+session that is killed when execution reaches the end of the script.
+
+You do not have any visual feedback of what is happening; however, you can watch
+the replay of the execution at a later time.
+
+For an example of running a script in background execution mode, try:
+
+```shell
+npm run sample ios
+```
+
+This is the most common mode of execution when you have a full suite of scripts to run in parallel
+(for instance from your CI).
+In such a case, you are usually only interested in accessing the session replay of a script that
+failed.
+
+### Live execution
+
+In this mode, your script also interacts with a freshly created remote session, but you can
+watch its execution in a browser in real time.
+
+For an example of running a script in live execution mode, try:
+
+```shell
+SHOW_SESSION=1 npm run sample ios
+```
+
+This mode is very useful when you want to watch the current behavior of a script, but you do
+not intend to modify it.
+
+### Interactive execution
+
+In this last mode, your script interacts with an ongoing remote session that _remains alive_
+when execution reaches the end of the script.
+
+In order to run in this mode, you must first launch a session manually in Waldo by going to
+https://app.waldo.com/applications/ios/sessions, and then copy the session ID from the URL (they
+are prefixed with `sess-`, such as `sess-1234567890abcdef`).
+
+As long as this session remains alive, you can execute your script against it. For an example
+of running a script in interactive execution mode, try:
+
+```shell
+SESSION_ID=sess-1234567890abcdef npm run sample ios
+```
+
+This mode is very useful for creating a new script or editing an existing one, since it allows you
+to quickly relaunch your app over and over without waiting for session initialization. In addition,
+this mode also allows you to perform some actions manually on the session in the browser, as well
+as use the tree inspector to determine the best way to locate an element.
+
+## Work on your first test
+
+### Upload your app
+
+Since Waldo Core API operates on devices running within the Waldo infrastructure, the first step to
+be able to test your app is to upload it to Waldo.
+
+To do so, follow the instructions in https://app.waldo.com/applications/0/builds/upload.
+
+### Run the scaffold test
+
+We’ve made it very easy for you to get up and running, with a [scaffold test](tests/scaffold-test.ts)
+ready to run on your own app.
+
+You simply need to target the app version that you previously uploaded. To do so, go
+to [your builds page](https://app.waldo.com/applications/0/builds), copy
+the version ID using the 3-dots menu, and run the following command:
+
+```shell
+VERSION_ID=[VersionID] npm run wdio
+```
+
+This test is _very_ basic. All it does is:
+
+1. Launch a session with your app
+2. Take a screenshot of it
+3. Exit
+
+That is all you need. You are now set up to create your own E2E scripts.
+
+### Start implementing
+
+This project scaffolding follows the `wdio` syntax. You can now add all the tests you want
+under the [tests directory](tests).
+
+For some inspiration on syntax, take a look at the [samples directory](samples) or
+the [WebdriverIO documentation][webdriverio].
+
+If you want to make this repository your own, feel free to remove the [samples directory](samples) entirely.
+
+## List of run parameters
+
+- `VERSION_ID` is the `id` of a specific build file of an app (hence the “app version”) you want to target with your test.
+  See the [upload section](#upload-your-app) of the documentation.
+
+- `SHOW_SESSION` enables [live execution](#live-execution).
+
+- `SESSION_ID` enables [interactive execution](#interactive-execution).
 
 [coreapi]: https://docs.waldo.com/reference/postwdhubsession
 [nodejs]: https://nodejs.org/
@@ -149,4 +220,3 @@ SESSION_ID=[YourSessionID] npm run wdio android
 [webdriverio]: https://webdriver.io/
 [wikipedia-ios]: https://github.com/wikimedia/wikipedia-ios
 [wikipedia-android]: https://github.com/wikimedia/apps-android-wikipedia
-[cli]: https://github.com/waldoapp/waldo-go-cli

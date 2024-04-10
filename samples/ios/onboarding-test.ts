@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 
 /**
- * This is an example script that interacts with the Wikipedia app
+ * This is a sample script that interacts with the Wikipedia app
  * and searches for the article about today's date
  */
 

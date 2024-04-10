@@ -1,14 +1,14 @@
 import { exec } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { promisify } from 'node:util';
 import { homedir } from 'node:os';
 import type { Options } from '@wdio/types';
 import { W3CCapabilities } from '@wdio/types/build/Capabilities';
 import { parse } from 'yaml';
 
-import { REMOTE_CONFIG } from './utils/config.ts';
-import { waitForSessionReady, addDriverCommands } from './utils/utils.ts';
-import { WaldoDriver } from './types/waldo.ts';
+import { REMOTE_CONFIG } from '../utils/config.ts';
+import { waitForSessionReady, addDriverCommands } from '../utils/utils.ts';
+import { WaldoDriver } from '../types/waldo.ts';
 
 const execP = promisify(exec);
 
@@ -42,29 +42,43 @@ refer to https://github.com/waldoapp/waldo-programmatic-samples#one-time-setup`)
 }
 
 // Load the params for the test
-const versionId = process.env.VERSION_ID;
 const showSession = process.env.SHOW_SESSION;
 const requestedSessionId = process.env.SESSION_ID;
-if (!versionId && !requestedSessionId) {
-  stopOnError(`Either VERSION_ID or SESSION_ID environment variable must be set.
 
-refer to https://github.com/waldoapp/waldo-programmatic-samples`);
+// The sample repository contains different set of tests to illustrate different capacities of Waldo.
+let sampleDirectory = 'ios';
+if (process.argv.length >= 5) {
+  const sampleDirectories = readdirSync(__dirname);
+  const directory = process.argv[4];
+  if (sampleDirectories.includes(directory)) {
+    sampleDirectory = directory;
+  } else {
+    stopOnError(`Unrecognized sample directory "${directory}"
+
+Usage: npm run sample {${sampleDirectories.map((d) => ` ${d} `).join('|')}}`);
+  }
 }
+// We consider the default platform to be iOS.
+const isIOS = !sampleDirectory.includes('android');
 
-// The requested device is completely configurable.
-// In this scaffold project we do not specify anything for the target, which will use the default device
-// as configured in your Waldo account:
-// - ios: https://app.waldo.com/applications/ios/configurations/devices
-// - android: https://app.waldo.com/applications/android/configurations/devices
-const requestedDevice = {
-  deviceName: '.*',
-  osVersion: '.*',
-};
+// The requested device is completely configurable. See https://core.waldo.com/devices for the list of all supported
+// devices. Simply make sure to run the Android scenario on an Android device and vice versa.
+const requestedDevice = isIOS
+  ? {
+      deviceName: 'iPhone 15',
+      osVersion: '17',
+    }
+  : {
+      deviceName: 'Pixel 7',
+      osVersion: '33',
+    };
+const platformName = isIOS ? 'iOS' : 'Android';
 
 const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
-    'appium:app': versionId,
+    platformName,
+    'appium:app': 'wiki',
     'waldo:displayName': 'Waldo Driver Session',
     'waldo:options': {
       ...requestedDevice,
@@ -96,10 +110,6 @@ export const config: Options.Testrunner = {
   protocol: REMOTE_CONFIG.protocol,
   path: REMOTE_CONFIG.path,
 
-  // hostname: 'localhost',
-  // port: 3035,
-  // protocol: 'http',
-
   //
   // ==================
   // Specify Test Files
@@ -116,7 +126,7 @@ export const config: Options.Testrunner = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: [`./tests/**/*.ts`],
+  specs: [`./${sampleDirectory}/**/*.ts`],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -147,7 +157,7 @@ export const config: Options.Testrunner = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'info',
+  logLevel: 'warn',
   //
   // Set specific log levels per logger
   // loggers:
@@ -158,9 +168,9 @@ export const config: Options.Testrunner = {
   // - @wdio/sumologic-reporter
   // - @wdio/cli, @wdio/config, @wdio/utils
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  /* logLevels: {
+  logLevels: {
     webdriver: 'info',
-  }, */
+  },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
   // bail (default is 0 - don't bail, run all tests).

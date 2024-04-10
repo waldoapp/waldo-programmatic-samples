@@ -22,6 +22,7 @@
     "types/global.d.ts",
     "utils",
     "samples",
+    "tests",
     "wdio.conf.ts",
     "node_modules/@wdio/globals/types.d.ts",
   ],

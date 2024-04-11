@@ -12,6 +12,18 @@ import { WaldoDriver } from './types/waldo.ts';
 
 const execP = promisify(exec);
 
+function truthify(value: any): boolean {
+  if (!value) return false;
+
+  if (typeof value === 'string' || value instanceof String) {
+    const lower = value.trim().toLowerCase();
+    if (!lower) return false;
+    if (lower === '0' || lower === 'false' || lower === 'no' || lower === 'off') return false;
+  }
+
+  return true;
+}
+
 function stopOnError(message: string) {
   console.error(`Could not run script: ${message}`, '\n');
 
@@ -42,9 +54,9 @@ refer to https://github.com/waldoapp/waldo-programmatic-samples#one-time-setup`)
 }
 
 // Load the params for the test
-const versionId = process.env.VERSION_ID;
-const showSession = process.env.SHOW_SESSION;
-const requestedSessionId = process.env.SESSION_ID;
+const versionId = process.env.VERSION_ID || '';
+const showSession = truthify(process.env.SHOW_SESSION);
+const requestedSessionId = process.env.SESSION_ID || '';
 if (!versionId && !requestedSessionId) {
   stopOnError(`Either VERSION_ID or SESSION_ID environment variable must be set.
 
@@ -64,7 +76,7 @@ const requestedDevice = {
 const requestedCapabilities: W3CCapabilities[] = [
   {
     // @ts-expect-error This is ok and required for Waldo
-    'appium:app': versionId,
+    'appium:app': versionId || '',
     'waldo:displayName': 'Waldo Driver Session',
     'waldo:options': {
       ...requestedDevice,

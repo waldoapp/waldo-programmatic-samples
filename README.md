@@ -88,80 +88,6 @@ Similary, you can run the [Android sample script](samples/android/onboarding-tes
 SHOW_SESSION=1 npm run sample android
 ```
 
-## Run modes
-
-When you execute a script that uses Waldo Core API, the script always uses a remote device session on a simulator/emulator
-running within the Waldo infrastructure.
-
-This has many advantages:
-
-- **simplicity**: the setup to execute or edit an E2E script locally only takes a few minutes: no more full Appium
-  install on your local machine or tweaking of system configurations.
-- **universality**: wherever the script executes, it targets the same remote device environment, and therefore you know
-  how it will behave: no more debugging local versus CI device conditions.
-- **collaboration**: one consequence of this _simplicity_ and _universality_ is the ease of working together with
-  the rest of your development team.
-- **full observability**: since everything runs remotely within the Waldo infrastructure, rich artifacts are captured
-  from every device session. These session replays can be accessed at any time in the future at
-  https://app.waldo.com/applications/0/replays.
-
-Since you do not necessarily want to run device sessions in the same way for all use cases (development, CI
-execution, etc.), there are 3 modes to run scripts:
-
-### Background execution
-
-In this mode, your script interacts via Waldo Core API with a freshly created remote
-session that is killed when execution reaches the end of the script.
-
-You do not have any visual feedback of what is happening; however, you can watch
-the replay of the execution at a later time.
-
-For an example of running a script in background execution mode, try:
-
-```shell
-npm run sample ios
-```
-
-This is the most common mode of execution when you have a full suite of scripts to run in parallel
-(for instance from your CI).
-In such a case, you are usually only interested in accessing the session replay of a script that
-failed.
-
-### Live execution
-
-In this mode, your script also interacts with a freshly created remote session, but you can
-watch its execution in a browser in real time.
-
-For an example of running a script in live execution mode, try:
-
-```shell
-SHOW_SESSION=1 npm run sample ios
-```
-
-This mode is very useful when you want to watch the current behavior of a script, but you do
-not intend to modify it.
-
-### Interactive execution
-
-In this last mode, your script interacts with an ongoing remote session that _remains alive_
-when execution reaches the end of the script.
-
-In order to run in this mode, you must first launch a session manually in Waldo by going to
-https://app.waldo.com/applications/ios/sessions, and then copy the session ID from the URL (they
-are prefixed with `sess-`, such as `sess-1234567890abcdef`).
-
-As long as this session remains alive, you can execute your script against it. For an example
-of running a script in interactive execution mode, try:
-
-```shell
-SESSION_ID=sess-1234567890abcdef npm run sample ios
-```
-
-This mode is very useful for creating a new script or editing an existing one, since it allows you
-to quickly relaunch your app over and over without waiting for session initialization. In addition,
-this mode also allows you to perform some actions manually on the session in the browser, as well
-as use the tree inspector to determine the best way to locate an element.
-
 ## Work on your first test
 
 ### Upload your app
@@ -201,6 +127,83 @@ For some inspiration on syntax, take a look at the [samples directory](samples) 
 the [WebdriverIO documentation][webdriverio].
 
 If you want to make this repository your own, feel free to remove the [samples directory](samples) entirely.
+
+## Run modes
+
+When you execute a script that uses Waldo Core API, the script always uses a remote device session on a simulator/emulator
+running within the Waldo infrastructure.
+
+This has many advantages:
+
+- **simplicity**: the setup to execute or edit an E2E script locally only takes a few minutes: no more full Appium
+  install on your local machine or tweaking of system configurations.
+- **universality**: wherever the script executes, it targets the same remote device environment, and therefore you know
+  how it will behave: no more debugging local versus CI device conditions.
+- **collaboration**: one consequence of this _simplicity_ and _universality_ is the ease of working together with
+  the rest of your development team.
+- **full observability**: since everything runs remotely within the Waldo infrastructure, rich artifacts are captured
+  from every device session. These session replays can be accessed at any time in the future at
+  https://app.waldo.com/applications/0/replays.
+
+Since you do not necessarily want to run device sessions in the same way for all use cases (development, CI
+execution, etc.), there are 3 modes to run scripts:
+
+### Background execution
+
+In this mode, your script interacts via Waldo Core API with a freshly created remote
+session that is killed when execution reaches the end of the script.
+
+You do not have any visual feedback of what is happening; however, you can watch
+the replay of the execution at a later time.
+
+For an example of running a script in background execution mode, try:
+
+```shell
+VERSION_ID=[VersionID] npm run wdio
+```
+
+This is the most common mode of execution when you have a full suite of scripts to run in parallel
+(for instance from your CI).
+In such a case, you are usually only interested in accessing the session replay of a script that
+failed.
+
+### Live execution
+
+In this mode, your script also interacts with a freshly created remote session, but you can
+watch its execution in a browser in real time.
+
+For an example of running a script in live execution mode, try:
+
+```shell
+VERSION_ID=[VersionID] SHOW_SESSION=1 npm run wdio
+```
+
+This mode is very useful when you want to watch the current behavior of a script, but you do
+not intend to modify it.
+
+### Interactive execution
+
+In this last mode, your script interacts with an ongoing remote session that _remains alive_
+when execution reaches the end of the script.
+
+In order to run in this mode, you must first launch a session manually in Waldo by going to
+https://app.waldo.com/applications/ios/sessions, and then copy the session ID from the URL (they
+are prefixed with `sess-`, such as `sess-1234567890abcdef`).
+
+As long as this session remains alive, you can execute your script against it. For an example
+of running a script in interactive execution mode, try:
+
+```shell
+SESSION_ID=[SessionID] npm run wdio
+```
+
+_Note_: in this mode, it is not necessary to specify `VERSION_ID` since the remote session was already
+started with a specific app version.
+
+This mode is very useful for creating a new script or editing an existing one, since it allows you
+to quickly relaunch your app over and over without waiting for session initialization. In addition,
+this mode also allows you to perform some actions manually on the session in the browser, as well
+as use the tree inspector to determine the best way to locate an element.
 
 ## List of run parameters
 

@@ -1,6 +1,6 @@
 # Testing with Waldo Core API
 
-![CleanShot 2024-02-15 at 00 20 54](https://github.com/waldoapp/waldo-programmatic-samples/assets/2805640/4781c206-4223-4279-a6e5-7659d3a96489)
+![CleanShot 2024-04-15 at 16 19 30](https://github.com/waldoapp/Wikipedia-scripted-testing/assets/2805640/b7b1f4a5-61d7-4984-bad6-c1f7464545af)
 
 ## Introduction
 

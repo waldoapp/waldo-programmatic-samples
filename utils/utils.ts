@@ -434,4 +434,17 @@ export function addDriverCommands(driver: WebdriverIO.Browser) {
       return swipeScreen(this, direction, fromScreenPercent, toScreenPercent);
     },
   );
+
+  driver.addCommand(
+    'log',
+    async function commandFn(
+      this: WebdriverIO.Browser,
+      message: string,
+      payload: Record<string, string | boolean | number> = {},
+      level: 'debug' | 'info' | 'warn' | 'error' = 'debug',
+    ) {
+      console.log(`[${level}]: ${message} - ${JSON.stringify(payload)}`);
+      return logEvent(this, message, payload, level);
+    },
+  );
 }

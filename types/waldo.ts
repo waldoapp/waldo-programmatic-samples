@@ -42,4 +42,9 @@ export type WaldoDriver = WebdriverIO.Browser & {
     toScreenPercent: number,
   ): Promise<void>;
   screenshot(path: string): Promise<void>;
+  log(
+    message: string,
+    payload?: Record<string, string | boolean | number>,
+    level?: 'debug' | 'info' | 'warn' | 'error',
+  ): Promise<void>;
 };

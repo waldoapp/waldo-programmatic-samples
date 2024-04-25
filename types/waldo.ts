@@ -1,4 +1,5 @@
 import { RemoteCapability } from '@wdio/types/build/Capabilities';
+import { AppiumElement } from '../utils/utils.ts';
 
 export type BoundingBox = { width: number; height: number; top: number; left: number };
 
@@ -33,7 +34,7 @@ export type WaldoDriver = WebdriverIO.Browser & {
     timeout?: number,
     delay?: number,
     waitForStability?: boolean,
-  ): Promise<void>;
+  ): Promise<AppiumElement>;
   tapCenterOfBox(box: any): Promise<void>;
   getNodes(predicate: (n: any) => boolean): Promise<any[]>;
   swipeScreen(

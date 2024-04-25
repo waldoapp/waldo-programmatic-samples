@@ -114,8 +114,8 @@ export async function swipeScreen(
   }
   const screen = await driver._getWindowSize();
   const swipeDirection = { fromX: 0, fromY: 0, toX: 0, toY: 0 };
-  const middleY = Math.round(screen.width / 2);
-  const middleX = Math.round(screen.height / 2);
+  const middleX = Math.round(screen.width / 2);
+  const middleY = Math.round(screen.height / 2);
   if (direction === 'vertical') {
     swipeDirection.fromX = middleX;
     swipeDirection.toX = middleX;

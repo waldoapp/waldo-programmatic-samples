@@ -2,13 +2,15 @@ import { exec } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { promisify } from 'node:util';
 import { homedir } from 'node:os';
-import type { Options } from '@wdio/types';
-import { W3CCapabilities } from '@wdio/types/build/Capabilities';
 import { parse } from 'yaml';
+
+import type { Options } from '@wdio/types';
+import type { W3CCapabilities } from '@wdio/types/build/Capabilities';
+import type { Test, TestResult } from '@wdio/types/build/Frameworks';
+import type { WaldoDriver } from './types/waldo.ts';
 
 import { REMOTE_CONFIG } from './utils/config.ts';
 import { waitForSessionReady, addDriverCommands } from './utils/utils.ts';
-import { WaldoDriver } from './types/waldo.ts';
 
 const execP = promisify(exec);
 
@@ -313,8 +315,9 @@ export const config: Options.Testrunner = {
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
    */
-  // beforeTest: function (test, context) {
-  // },
+  async beforeTest(test) {
+    await driver.log(`Starting test "${test.title}"`, { file: test.file });
+  },
   /**
    * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
    * beforeEach in Mocha)
@@ -330,16 +333,29 @@ export const config: Options.Testrunner = {
   /**
    * Function to be executed after a test (in Mocha/Jasmine only)
    * @param {object}  test             test object
-   * @param {object}  context          scope object the test was executed with
-   * @param {Error}   result.error     error object in case the test fails, otherwise `undefined`
-   * @param {*}       result.result    return object of test function
-   * @param {number}  result.duration  duration of test
-   * @param {boolean} result.passed    true if test has passed, otherwise false
-   * @param {object}  result.retries   information about spec related retries, e.g. `{ attempts: 0, limit: 0 }`
+   * @param {object}  _context         scope object the test was executed with
+   * @param {object}  testResult       result object of test function
    */
-  // afterTest(test, context, { error, result, duration, passed, retries }) {
-  // console.log(test, context);
-  // },
+  async afterTest(test: Test, _context: any, testResult: TestResult) {
+    const { error, result, duration, passed } = testResult;
+    if (passed) {
+      await driver.log(
+        `Test "${test.title}": Success in ${duration}ms`,
+        { file: test.file },
+        'info',
+      );
+    } else {
+      await driver.log(
+        `Test "${test.title}": Failed: ${error} (${duration}ms)`,
+        {
+          file: test.file,
+          error: String(error?.message),
+          result,
+        },
+        'error',
+      );
+    }
+  },
 
   /**
    * Hook that gets executed after the suite has ended
@@ -367,12 +383,13 @@ export const config: Options.Testrunner = {
   // },
   /**
    * Gets executed right after terminating the webdriver session.
-   * @param {object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {Array.<String>} specs List of spec file paths that ran
+   * @param {object} _sessionConfig wdio configuration object
+   * @param {Array.<Object>} _capabilities list of capabilities details
+   * @param {Array.<String>} _specs List of spec file paths that ran
    */
-  // afterSession: function (config, capabilities, specs) {
-  // },
+  afterSession() {
+    console.log(`\n\nWaldo Session link: ${driver.capabilities.replayUrl}\n\n`);
+  },
   /**
    * Gets executed after all workers got shut down and the process is about to exit. An error
    * thrown in the onComplete hook will result in the test run failing.

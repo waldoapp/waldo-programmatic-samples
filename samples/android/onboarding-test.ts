@@ -7,7 +7,7 @@ import * as moment from 'moment/moment';
 
 describe('Wikipedia Android - Onboarding', () => {
   it('goes through onboarding', async () => {
-    await driver.log('Going through onboarding', {}, 'info');
+    await driver.log('Going through onboarding screens', {}, 'info');
     await driver.tapElement('text', 'CONTINUE');
     await driver.screenshot(`android/screenshot-onboarding.png`);
 
@@ -15,13 +15,12 @@ describe('Wikipedia Android - Onboarding', () => {
     await driver.tapElement('text', 'CONTINUE');
 
     await driver.tapElement('text', 'GET STARTED');
-    await driver.log('Done with onboarding', {}, 'info');
   });
 
   it("Search today's date", async () => {
     const today = moment().format('MMMM Do');
-    await driver.log(`Will search for today's date`, { date: today }, 'info');
     await driver.tapElement('text', 'Search Wikipedia');
+    await driver.log(`Will search for today's date`, { date: today }, 'info');
     await driver.typeInElement('text', 'Search Wikipedia', today);
     await driver.tapElement('text', 'Day of the year');
     await driver.waitForElement('text', 'Day of the year', 10_000, 500, true);

@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 
 /**
  * This is a sample script that interacts with the Wikipedia app

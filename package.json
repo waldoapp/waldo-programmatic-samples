@@ -1,11 +1,13 @@
 {
   "license": "UNLICENSED",
   "name": "waldo-wikipedia-scripted-testing",
+  "type": "module",
   "devDependencies": {
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.22",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
+    "@waldoapp/wdio-service": "^0.1.6",
     "@wdio/cli": "^8.24.16",
     "@wdio/local-runner": "^8.24.12",
     "@wdio/mocha-framework": "^8.24.12",
@@ -26,7 +28,6 @@
   "scripts": {
     "sample": "wdio run samples/wdio.conf.ts",
     "wdio": "wdio run wdio.conf.ts",
-    "authenticate": "ts-node ./authenticate",
     "eslint:fix": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ --fix .",
     "eslint:check": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ .",
     "prettier:check": "prettier --cache --check .",

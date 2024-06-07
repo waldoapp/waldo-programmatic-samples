@@ -68,7 +68,7 @@ It describes the instructions below, as well as shows you how to edit a script.
 4. Go to [your settings page][config] to find your API token; then run the following command:
 
    ```sh
-   npm run authenticate [YourToken]
+   npm exec waldo-auth [YourToken]
    ```
 
 ### First run

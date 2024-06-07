@@ -1,51 +1,17 @@
-import { exec } from 'node:child_process';
-import { readFileSync, readdirSync } from 'node:fs';
-import { promisify } from 'node:util';
-import { homedir } from 'node:os';
-import { parse } from 'yaml';
+import { readdirSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import type { Options } from '@wdio/types';
-import type { W3CCapabilities } from '@wdio/types/build/Capabilities';
-import type { Test, TestResult } from '@wdio/types/build/Frameworks';
-import type { WaldoDriver } from '../types/waldo.ts';
+import '@waldoapp/wdio-service';
 
-import { REMOTE_CONFIG } from '../utils/config.ts';
-import { waitForSessionReady, addDriverCommands } from '../utils/utils.ts';
-
-const execP = promisify(exec);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function stopOnError(message: string) {
   console.error(`Could not run script: ${message}`, '\n');
 
   process.exit(1);
 }
-
-// Load the token from the environment, or default to the waldo profile file
-let waldoToken = process.env.WALDO_API_TOKEN || process.env.TOKEN;
-const waldoProfileFile = `${homedir()}/.waldo/profile.yml`;
-if (!waldoToken) {
-  try {
-    const ymlContent = readFileSync(waldoProfileFile, 'utf-8');
-    const config = parse(ymlContent);
-    waldoToken = config.user_token;
-    console.log(`Successfully loaded user token from ${waldoProfileFile}`);
-  } catch (error: any) {
-    // File not existing is expected - any other error is not
-    if (error.code !== 'ENOENT') {
-      throw error;
-    }
-  }
-}
-
-if (!waldoToken) {
-  stopOnError(`No credentials found.
-
-refer to https://github.com/waldoapp/waldo-programmatic-samples#one-time-setup`);
-}
-
-// Load the params for the test
-const showSession = process.env.SHOW_SESSION;
-const requestedSessionId = process.env.SESSION_ID;
 
 // The sample repository contains different set of tests to illustrate different capacities of Waldo.
 let sampleDirectory = 'ios';
@@ -76,23 +42,19 @@ const requestedDevice = isIOS
     };
 const platformName = isIOS ? 'iOS' : 'Android';
 
-const requestedCapabilities: W3CCapabilities[] = [
+const requestedCapabilities: WebdriverIO.Capabilities[] = [
   {
-    // @ts-expect-error This is ok and required for Waldo
     platformName,
     'appium:app': 'wiki',
-    'waldo:displayName': 'Waldo Driver Session',
     'waldo:options': {
       ...requestedDevice,
       waldoMode: true,
-      token: waldoToken,
-      sessionId: requestedSessionId,
       waitSessionReady: false,
     },
   },
 ];
 
-export const config: Options.Testrunner = {
+export const config: WebdriverIO.Config = {
   //
   // ====================
   // Runner Configuration
@@ -106,11 +68,6 @@ export const config: Options.Testrunner = {
       transpileOnly: true,
     },
   },
-
-  hostname: REMOTE_CONFIG.hostname,
-  port: REMOTE_CONFIG.port,
-  protocol: REMOTE_CONFIG.protocol,
-  path: REMOTE_CONFIG.path,
 
   //
   // ==================
@@ -172,6 +129,7 @@ export const config: Options.Testrunner = {
   // Level of logging verbosity: trace | debug | info | warn | error | silent
   logLevels: {
     webdriver: 'info',
+    '@waldoapp/wdio-service': 'info',
   },
   //
   // If you only want to run your tests until a specific amount of tests have failed use
@@ -198,7 +156,7 @@ export const config: Options.Testrunner = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: [],
+  services: ['@waldoapp/wdio-service'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -229,192 +187,4 @@ export const config: Options.Testrunner = {
     ui: 'bdd',
     timeout: 60000,
   },
-
-  //
-  // =====
-  // Hooks
-  // =====
-  // WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
-  // it and to build services around it. You can either apply a single function or an array of
-  // methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
-  // resolved to continue.
-  /**
-   * Gets executed once before all workers get launched.
-   * @param {object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   */
-  // onPrepare: function (config, capabilities) {
-  // },
-  /**
-   * Gets executed before a worker process is spawned and can be used to initialize specific service
-   * for that worker as well as modify runtime environments in an async fashion.
-   * @param  {string} cid      capability id (e.g 0-0)
-   * @param  {object} caps     object containing capabilities for session that will be spawn in the worker
-   * @param  {object} specs    specs to be run in the worker process
-   * @param  {object} args     object that will be merged with the main configuration once worker is initialized
-   * @param  {object} execArgv list of string arguments passed to the worker process
-   */
-  // onWorkerStart: function (cid, caps, specs, args, execArgv) {
-  // },
-  /**
-   * Gets executed just after a worker process has exited.
-   * @param  {string} cid      capability id (e.g 0-0)
-   * @param  {number} exitCode 0 - success, 1 - fail
-   * @param  {object} specs    specs to be run in the worker process
-   * @param  {number} retries  number of retries used
-   */
-  // onWorkerEnd: function (cid, exitCode, specs, retries) {
-  // },
-  /**
-   * Gets executed just before initialising the webdriver session and test framework. It allows you
-   * to manipulate configurations depending on the capability or spec.
-   * @param {object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {Array.<String>} specs List of spec file paths that are to be run
-   * @param {string} cid worker id (e.g. 0-0)
-   */
-  // beforeSession: function (config, capabilities, specs, cid) {
-  // },
-  /**
-   * Gets executed before test execution begins. At this point you can access to all global
-   * variables like `browser`. It is the perfect place to define custom commands.
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {Array.<String>} _specs        List of spec file paths that are to be run
-   * @param {object}         browser      instance of created browser/device session
-   */
-  async before(capabilities: any, _specs: string[], browser: WaldoDriver) {
-    // Add Waldo specific logic to the driver
-    addDriverCommands(browser);
-
-    // Open Waldo session in browser if not in interactive mode
-    if (showSession && !requestedSessionId) {
-      await execP(`open "${browser.capabilities.replayUrl}"`);
-    }
-
-    console.log(`View live session: ${browser.capabilities.replayUrl}`);
-
-    if (!capabilities['waldo:options'].waitSessionReady) {
-      await waitForSessionReady(browser.sessionId);
-    }
-  },
-  /**
-   * Runs before a WebdriverIO command gets executed.
-   * @param {string} commandName hook command name
-   * @param {Array} args arguments that command would receive
-   */
-  // beforeCommand: function (commandName, args) {
-  // },
-  /**
-   * Hook that gets executed before the suite starts
-   * @param {object} suite suite details
-   */
-  // beforeSuite: function (suite) {
-  // },
-  /**
-   * Function to be executed before a test (in Mocha/Jasmine) starts.
-   */
-  async beforeTest(test) {
-    await driver.log(`Starting test "${test.title}"`, { file: test.file }, 'info');
-  },
-  /**
-   * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
-   * beforeEach in Mocha)
-   */
-  // beforeHook: function (test, context, hookName) {
-  // },
-  /**
-   * Hook that gets executed _after_ a hook within the suite starts (e.g. runs after calling
-   * afterEach in Mocha)
-   */
-  // afterHook: function (test, context, { error, result, duration, passed, retries }, hookName) {
-  // },
-  /**
-   * Function to be executed after a test (in Mocha/Jasmine only)
-   * @param {object}  test             test object
-   * @param {object}  _context         scope object the test was executed with
-   * @param {object}  testResult       result object of test function
-   */
-  async afterTest(test: Test, _context: any, testResult: TestResult) {
-    const { error, result, duration, passed } = testResult;
-    if (passed) {
-      await driver.log(
-        `Test "${test.title}": Success in ${duration}ms`,
-        { file: test.file },
-        'info',
-      );
-    } else {
-      await driver.log(
-        `Test "${test.title}": Failed: ${error} (${duration}ms)`,
-        {
-          file: test.file,
-          error: String(error?.message),
-          result,
-        },
-        'error',
-      );
-    }
-  },
-
-  /**
-   * Hook that gets executed after the suite has ended
-   * @param {object} suite suite details
-   */
-  // afterSuite: function (suite) {
-  // },
-  /**
-   * Runs after a WebdriverIO command gets executed
-   * @param {string} commandName hook command name
-   * @param {Array} args arguments that command would receive
-   * @param {number} result 0 - command success, 1 - command error
-   * @param {object} error error object if any
-   */
-  // afterCommand: function (commandName, args, result, error) {
-  // },
-  /**
-   * Gets executed after all tests are done. You still have access to all global variables from
-   * the test.
-   * @param {number} result 0 - test pass, 1 - test fail
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {Array.<String>} specs List of spec file paths that ran
-   */
-  // after: function (result, capabilities, specs) {
-  // },
-  /**
-   * Gets executed right after terminating the webdriver session.
-   * @param {object} _sessionConfig wdio configuration object
-   * @param {Array.<Object>} _capabilities list of capabilities details
-   * @param {Array.<String>} _specs List of spec file paths that ran
-   */
-  afterSession() {
-    console.log(`\n\nWaldo Session link: ${driver.capabilities.replayUrl}\n\n`);
-  },
-  /**
-   * Gets executed after all workers got shut down and the process is about to exit. An error
-   * thrown in the onComplete hook will result in the test run failing.
-   * @param {object} exitCode 0 - success, 1 - fail
-   * @param {object} config wdio configuration object
-   * @param {Array.<Object>} capabilities list of capabilities details
-   * @param {<Object>} results object containing test results
-   */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
-  /**
-   * Gets executed when a refresh happens.
-   * @param {string} oldSessionId session ID of the old session
-   * @param {string} newSessionId session ID of the new session
-   */
-  // onReload: function(oldSessionId, newSessionId) {
-  // }
-  /**
-   * Hook that gets executed before a WebdriverIO assertion happens.
-   * @param {object} params information about the assertion to be executed
-   */
-  // beforeAssertion: function(params) {
-  // }
-  /**
-   * Hook that gets executed after a WebdriverIO assertion happened.
-   * @param {object} params information about the assertion that was executed, including its results
-   */
-  // afterAssertion: function(params) {
-  // }
 };

@@ -11,7 +11,8 @@ It also includes some samples in the [samples directory](./samples) so that
 you can quickly familiarize yourself with the capabilities of Waldo Core API. You can
 learn more in the [README](./samples/README.md) for this directory.
 
-> **Note:** This project extends the [WebdriverIO][webdriverio] mobile
+> [!NOTE]
+> This project extends the [WebdriverIO][webdriverio] mobile
 > automation test framework to communicate with Waldo Core API. However,
 > since [Waldo Core API][coreapi] implements the [W3C WebDriver standard
 > endpoints][w3c], you can use _any_ automation test framework that

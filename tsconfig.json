@@ -22,9 +22,8 @@
   "include": [
     "types/global.d.ts",
     "utils",
-    "samples",
-    "tests",
-    "wdio.conf.ts",
+    "android",
+    "ios",
     "node_modules/@wdio/globals/types.d.ts",
   ],
 }

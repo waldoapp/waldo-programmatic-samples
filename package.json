@@ -26,8 +26,8 @@
     "yaml": "^2.3.4"
   },
   "scripts": {
-    "sample": "wdio run samples/wdio.conf.ts",
-    "wdio": "wdio run wdio.conf.ts",
+    "ios": "wdio ios/wdio.conf.ts",
+    "android": "wdio android/wdio.conf.ts",
     "eslint:fix": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ --fix .",
     "eslint:check": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ .",
     "prettier:check": "prettier --cache --check .",

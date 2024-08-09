@@ -21,11 +21,6 @@ This has many advantages:
 
 In this project we provide several examples of how to script end-to-end (E2E) mobile tests with Waldo Scripting.
 
-> [!IMPORTANT]
-> The samples uses the [@wdio/wdio-service](https://www.npmjs.com/package/@waldoapp/wdio-service) package to
-> communicate with Waldo Scripting. The package README contains more information about the service, how to configure
-> it and all the available commands.
-
 > [!NOTE]
 > The sample scripts point to the open-source [Wikipedia iOS app][wikipedia-ios] or
 > [Wikipedia Android app][wikipedia-android].
@@ -57,6 +52,11 @@ Refer to the [nodejs.org installation instructions](https://nodejs.org/en/learn/
 for more information.
 
 ## Getting started
+
+> [!IMPORTANT]
+> The samples uses the [@wdio/wdio-service](https://www.npmjs.com/package/@waldoapp/wdio-service) package to
+> communicate with Waldo Scripting. The package README contains more information about the service, how to configure
+> it and all the available commands.
 
 The best way to discover scripting with Waldo is to
 [follow our guide in the product](https://app.waldo.com/applications/0/sessions?guide=wikipedia-programmatic).

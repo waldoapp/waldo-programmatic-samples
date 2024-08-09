@@ -1,4 +1,4 @@
-name: lint
+name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
@@ -7,7 +7,8 @@ on:
     branches: ['main']
   workflow_dispatch:
 jobs:
-  build:
+  check:
+    name: Build and lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

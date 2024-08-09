@@ -96,13 +96,13 @@ You can now run the sample scripts targeting the Wikipedia app.
 For instance, you can run the [iOS sample script](ios/test/onboarding.ts):
 
 ```shell
-SHOW_SESSION=1 npm run ios -- --spec onboarding
+SHOW_SESSION=1 npm run ios -- --spec onboarding.ts
 ```
 
 Similarly, you can run the [Android sample script](android/test/onboarding.ts):
 
 ```shell
-SHOW_SESSION=1 npm run android -- --spec onboarding
+SHOW_SESSION=1 npm run android -- --spec onboarding.ts
 ```
 
 ## Exploring Waldo Scripting
@@ -123,10 +123,10 @@ To do so, you can use the [live execution mode][live-exec]:
 
 ```sh
 # iOS https://app.waldo.com/applications/ios/sessions?versionId=wiki
-SESSION_ID=[SessionID] npm run ios -- --spec onboarding
+SESSION_ID=[SessionID] npm run ios -- --spec onboarding.ts
 
 # Android https://app.waldo.com/applications/android/sessions?versionId=wiki
-SESSION_ID=[SessionID] npm run android -- --spec onboarding
+SESSION_ID=[SessionID] npm run android -- --spec onboarding.ts
 ```
 
 [live-exec]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#live-execution

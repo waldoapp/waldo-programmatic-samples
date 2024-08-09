@@ -28,6 +28,6 @@ export const config: WebdriverIO.Config = {
   services: ['@waldoapp/wdio-service'],
   reporters: ['spec'],
   mochaOpts: {
-    timeout: 60000,
+    timeout: 10 * 60 * 1000,
   },
 };

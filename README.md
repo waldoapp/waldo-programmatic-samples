@@ -4,7 +4,7 @@
 
 ## Introduction
 
-When you execute a script that uses Waldo Core API, the script always uses a remote device session on a
+When you execute a script that uses Waldo Scripting, the script always uses a remote device session on a
 simulator/emulator running within the Waldo infrastructure.
 
 This has many advantages:
@@ -21,10 +21,16 @@ This has many advantages:
 
 In this project we provide several examples of how to script end-to-end (E2E) mobile tests with Waldo Scripting.
 
-The sample scripts point to the open-source [Wikipedia iOS app][wikipedia-ios] or
-[Wikipedia Android app][wikipedia-android].
+> [!IMPORTANT]
+> The samples uses the [@wdio/wdio-service](https://www.npmjs.com/package/@waldoapp/wdio-service) package to
+> communicate with Waldo Scripting. The package README contains more information about the service, how to configure
+> it and all the available commands.
 
 > [!NOTE]
+> The sample scripts point to the open-source [Wikipedia iOS app][wikipedia-ios] or
+> [Wikipedia Android app][wikipedia-android].
+
+> [!TIP]
 > This project extends the [WebdriverIO][webdriverio] mobile automation test framework to communicate with
 > Waldo Scripting. However, since [Waldo Scripting][coreapi] implements the [W3C WebDriver standard endpoints][w3c]
 > and most of the [Appium][appium] extensions, you can use _any_ automation test framework that targets these
@@ -131,6 +137,18 @@ More information can be found in the [Specifying the application binary/build to
 service readme.
 
 [specifying]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#specifying-the-application-binarybuild-to-target
+
+### Integrating in your own project
+
+If you already have [a WebDriverIO project][existing-wdio] or want to [start from scratch][from-scratch] you can
+follow the corresponding sections of the service readme.
+
+But you can also copy and reuse part of this sample project in your own project by copying the node and typescript
+configuration files (`package.json`, `tsconfig.json`) and one of the folder that contains the sample scripts
+(`ios` and `android`).
+
+[from-scratch]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#starting-from-scratch
+[existing-wdio]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#in-an-existing-webdriverio-project
 
 [coreapi]: https://docs.waldo.com/reference/postwdhubsession
 [nodejs]: https://nodejs.org/

@@ -122,11 +122,11 @@ session and iterate without starting from a clean device each time.
 To do so, you can use the [live execution mode][live-exec]:
 
 ```sh
-# Sessions for the Wikipedia app can be created from one of theses links:
-# - https://app.waldo.com/applications/ios/sessions?versionId=wiki
-# - https://app.waldo.com/applications/android/sessions?versionId=wiki
+# iOS https://app.waldo.com/applications/ios/sessions?versionId=wiki
+SESSION_ID=[SessionID] npm run ios -- --spec onboarding
 
-SESSION_ID=[SessionID] npm run wdio -- --spec [YourScript]
+# Android https://app.waldo.com/applications/android/sessions?versionId=wiki
+SESSION_ID=[SessionID] npm run android -- --spec onboarding
 ```
 
 [live-exec]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#live-execution

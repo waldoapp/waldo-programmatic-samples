@@ -9,15 +9,17 @@ export const config: WebdriverIO.Config = {
     },
   },
   specs: ['./test/**/*.ts'],
-  capabilities: [{
-    platformName: 'Android',
-    'appium:app': 'wiki',
-    'waldo:automationName': 'Waldo',
-    'waldo:options': {
-      deviceName: 'Pixel 7',
-      osVersion: '33',
+  capabilities: [
+    {
+      platformName: 'Android',
+      'appium:app': 'wiki',
+      'waldo:automationName': 'Waldo',
+      'waldo:options': {
+        deviceName: 'Pixel 7',
+        osVersion: '33',
+      },
     },
-  }],
+  ],
   logLevel: 'warn',
   logLevels: {
     webdriver: 'info',

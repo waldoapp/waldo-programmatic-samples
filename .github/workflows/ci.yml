@@ -1,0 +1,25 @@
+name: CI
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+jobs:
+  check:
+    name: Build and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: install
+        run: npm install
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npm run eslint:check
+      - name: Prettier
+        run: npm run prettier:check

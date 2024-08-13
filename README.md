@@ -107,7 +107,7 @@ SHOW_SESSION=1 npm run android -- --spec onboarding.ts
 
 ## Exploring Waldo Scripting
 
-Once you have run the sample scripts, you can explore explore the
+Once you have run the sample scripts, you can explore the
 [WebDriverIO API](https://webdriver.io/docs/api/browser) and the
 [Waldo service documentation][service-readme] to learn more about how
 to interact with the device.

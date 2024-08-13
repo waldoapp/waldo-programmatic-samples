@@ -55,7 +55,7 @@ for more information.
 
 > [!IMPORTANT]
 > The samples uses the [@wdio/wdio-service](https://www.npmjs.com/package/@waldoapp/wdio-service) package to
-> communicate with Waldo Scripting. The package README contains more information about the service, how to configure
+> communicate with Waldo Scripting. The package's README contains more information about the service, how to configure
 > it and all the available commands.
 
 The best way to discover scripting with Waldo is to

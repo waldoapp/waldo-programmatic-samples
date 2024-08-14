@@ -32,5 +32,10 @@
     "eslint:check": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ .",
     "prettier:check": "prettier --cache --check .",
     "prettier:format": "prettier --cache --write ."
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "trailingComma": "all"
   }
 }

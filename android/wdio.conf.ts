@@ -1,13 +1,6 @@
 import '@waldoapp/wdio-service';
 
 export const config: WebdriverIO.Config = {
-  autoCompileOpts: {
-    autoCompile: true,
-    tsNodeOpts: {
-      project: './tsconfig.json',
-      transpileOnly: true,
-    },
-  },
   specs: ['./test/**/*.ts'],
   capabilities: [
     {

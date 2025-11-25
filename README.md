@@ -80,7 +80,7 @@ It describes the instructions below, as well as shows you how to edit a script.
 3. Install the project dependencies:
 
    ```sh
-   npm install
+   corepack enable && pnpm install
    ```
 
 4. Go to [your settings page][config] to find your API token; then run the following command:
@@ -96,13 +96,13 @@ You can now run the sample scripts targeting the Wikipedia app.
 For instance, you can run the [iOS sample script](ios/test/onboarding.ts):
 
 ```shell
-SHOW_SESSION=1 npm run ios -- --spec onboarding.ts
+SHOW_SESSION=1 pnpm run ios -- --spec onboarding.ts
 ```
 
 Similarly, you can run the [Android sample script](android/test/onboarding.ts):
 
 ```shell
-SHOW_SESSION=1 npm run android -- --spec onboarding.ts
+SHOW_SESSION=1 pnpm run android -- --spec onboarding.ts
 ```
 
 ## Exploring Waldo Scripting
@@ -123,10 +123,10 @@ To do so, you can use the [live execution mode][live-exec]:
 
 ```sh
 # iOS https://app.waldo.com/applications/ios/sessions?versionId=wiki
-SESSION_ID=[SessionID] npm run ios -- --spec onboarding.ts
+SESSION_ID=[SessionID] pnpm run ios -- --spec onboarding.ts
 
 # Android https://app.waldo.com/applications/android/sessions?versionId=wiki
-SESSION_ID=[SessionID] npm run android -- --spec onboarding.ts
+SESSION_ID=[SessionID] pnpm run android -- --spec onboarding.ts
 ```
 
 [live-exec]: https://github.com/waldoapp/wdio-service/blob/main/Readme.md#live-execution

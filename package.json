@@ -9,6 +9,7 @@
     "@typescript-eslint/parser": "^6.18.1",
     "@waldoapp/wdio-service": "^1.1.0",
     "@wdio/cli": "^9.0.0",
+    "@wdio/globals": "^9.0.0",
     "@wdio/local-runner": "^9.0.0",
     "@wdio/mocha-framework": "^9.0.0",
     "@wdio/spec-reporter": "^9.0.0",
@@ -28,14 +29,17 @@
   "scripts": {
     "ios": "wdio ios/wdio.conf.ts",
     "android": "wdio android/wdio.conf.ts",
-    "eslint:fix": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ --fix .",
-    "eslint:check": "yarn eslint --cache --cache-location=node_modules/.cache/eslint/ .",
+    "eslint:fix": "eslint --cache --cache-location=node_modules/.cache/eslint/ --fix .",
+    "eslint:check": "eslint --cache --cache-location=node_modules/.cache/eslint/ .",
     "prettier:check": "prettier --cache --check .",
-    "prettier:format": "prettier --cache --write ."
+    "prettier:format": "prettier --cache --write .",
+    "tsc:check": "tsc --noEmit",
+    "ci": "pnpm run eslint:check && pnpm run prettier:check && pnpm run tsc:check"
   },
   "prettier": {
     "singleQuote": true,
     "printWidth": 100,
     "trailingComma": "all"
-  }
+  },
+  "packageManager": "pnpm@10.23.0+sha256.a1cdd7b468386a9d78a081da05d6049d7e598db62a299db92df21a7062a4b183"
 }

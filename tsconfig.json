@@ -14,16 +14,16 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
   "ts-node": {
-    "files": true,
+    "files": true
   },
   "include": [
     "types/global.d.ts",
     "utils",
     "android",
     "ios",
-    "node_modules/@wdio/globals/types.d.ts",
-  ],
+    "node_modules/@wdio/globals/types.d.ts"
+  ]
 }
